@@ -1,0 +1,62 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { Image } from "astro:assets";
+
+import pdf_icon from "../img/pdf-icon.png";
+
+const files = [
+  {
+    filename: "MuHSiC Interviewer Manual",
+    link: "/material/0_Interviewer-manual.pdf",
+  },
+  {
+    filename: "English Sociolinguistic Interview Questions",
+    link: "/material/1_Sociolinguistic-interview-questions-English.pdf",
+  },
+  {
+    filename: "Spanish Sociolinguistic Interview Questions",
+    link: "/material/2_Sociolinguistic-interview-questions-Spanish.pdf",
+  },
+  {
+    filename: "Interviewer Background Form",
+    link: "/material/3_Interviewer-background.pdf",
+  },
+  {
+    filename: "Interviewer Field Notes",
+    link: "/material/4_Interviewer-field_notes.pdf",
+  },
+  {
+    filename: "Cuestionario Sociodemográfico",
+    link: "/material/5_Cuestionario-sociodemogr%C3%A1fico.pdf",
+  },
+  {
+    filename: "BLP (English-Spanish)",
+    link: "/material/6a_BLP-ENGLISH-SPANISH.pdf",
+  },
+  {
+    filename: "BLP (Spanish-English)",
+    link: "/material/6b_BLP-ESPA%C3%91OL-INGL%C3%89S.pdf",
+  },
+];
+---
+
+<Layout title="Materials">
+  <ul>
+    {
+      files.map((file) => (
+        <li>
+          <a href={file.link}>
+            <Image
+              src={pdf_icon}
+              alt="PDF Icon"
+              width={32}
+              height={32}
+              style="position:relative; bottom:-12px;"
+            />
+            {file.filename}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>

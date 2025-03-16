@@ -1,0 +1,296 @@
+---
+import Layout from "@/layouts/Layout.astro";
+---
+
+<Layout title="Links to Other Corpora">
+  <p class="has-medium-font-size"><strong>Spanish</strong></p>
+  <ul class="wp-block-list">
+    <li>
+      <a href="http://www.bangortalk.org.uk/"
+        >CANOLFAN: The Miami corpus consists of conversations by Spanish-English
+        bilinguals</a
+      >
+    </li>
+    <li>
+      <a href="https://cesa.arizona.edu/"
+        >CESA: Corpus Del Español en el sur de Arizona</a
+      > (Corpus of Spanish in Southern Arizona)
+    </li>
+    <li><a href="https://www.corpusdelespanol.org/">Corpus Del Español</a></li>
+    <li>
+      <a
+        href="https://libguides.library.albany.edu/c.php?g=536977&p=3676740#:~:text=%22The%20Corpus%20of%20Mexican%20Spanish,English%20in%20the%20United%20States.%22"
+        >Corpus of Mexican Spanish in Salinas</a
+      >
+    </li>
+    <li>
+      <a href="https://lef.colmex.mx/corpus_sociolinguistico.html"
+        >Corpus Sociolingüistico de la Ciudad de México (CSCM)</a
+      >
+    </li>
+    <li>
+      <a href="https://www.uam.es/coser"
+        >COSER: Corpus oral y Sonora del Español Rural</a
+      >
+    </li>
+    <li>
+      <a href="https://www.iifilologicas.unam.mx/elhablamexico/"
+        >Lope Blanch Corpus</a
+      >
+    </li>
+    <li>
+      <a href="https://preseea.uah.es/"
+        >PRESEEA: Proyecto para el estudio sociolingüístico del español de
+        España y de América</a
+      >
+    </li>
+    <li>
+      <a
+        href="https://nam01.safelinks.protection.outlook.com/?url=https%3A%2F%2Fwww.coerll.utexas.edu%2Fcoerll%2Fproject%2Fspanish-texas-corpus&data=02%7C01%7Cmaricela.perez%40utrgv.edu%7C46627ecbe8794cb2c43008d6ea9d9de9%7C990436a687df491c91249afa91f88827%7C0%7C0%7C636954360012934977&sdata=opWgxaadmJ9ZdYhTF9fefliwMiBuibvmGWA6BQ3XyqA%3D&reserved=0"
+        >Spanish in Texas</a
+      >
+    </li>
+    <li><a href="https://www.utrgv.edu/cobiva/index.htm">CoBiVa<br /></a></li>
+  </ul>
+
+  <p class="has-medium-font-size"><strong>Other Languages</strong></p>
+  <ul class="wp-block-list">
+    {
+      // corpora represented in JSON
+      [
+        {
+          language: "Catalan",
+          corpora: [
+            {
+              name: "Ancora",
+              link: "https://clic.ub.edu/corpus/",
+            },
+          ],
+        },
+        {
+          language: "Dutch",
+          corpora: [
+            {
+              name: "Brieven als Buit",
+              link: "https://ivdnt.org/corpora-lexica/brieven-als-buit/",
+            },
+          ],
+        },
+        {
+          language: "English",
+          corpora: [
+            {
+              name: "SLAAP: The Sociolinguistic Archive and Analysis Project",
+              link: "http://slaap.lib.ncsu.edu/",
+            },
+            {
+              name: "CORAAL: The Corpus of Regional African American Language",
+              link: "https://oraal.uoregon.edu/coraal",
+            },
+            {
+              name: "DECTE: Diachronic Electronic Corpus of Tyneside English",
+              link: "http://research.ncl.ac.uk/decte/",
+            },
+            {
+              name: "English ACE: Australian National Corpus",
+              link: "https://www.ausnc.org.au/corpora/facet_listing?include_subfolders",
+            },
+            {
+              name: "ICE: International Corpus of English",
+              link: "http://ice-corpora.net/ice/",
+            },
+            {
+              name: "PAC: The Phonology of Contemporary English",
+              link: "https://www.pacprogramme.net/",
+            },
+            {
+              name: "SBCSAE: The Santa Barbara Corpus of Spoken American English",
+              link: "http://www.linguistics.ucsb.edu/research/santa-barbara-corpus",
+            },
+            {
+              name: "WSC: The Wellington Corpus of Spoken New Zealand English",
+              link: "http://www.victoria.ac.nz/lals/resources/corpora-default/corpora-wsc",
+            },
+          ],
+        },
+        {
+          language: "French",
+          corpora: [
+            {
+              name: "CFPP: Le Corpus de Français Parlé Parisien",
+              link: "http://cfpp2000.univ-paris3.fr/",
+            },
+            {
+              name: "PFC: Phonologie du Français Contemporain",
+              link: "http://www.projet-pfc.net/",
+              notes: "Phonology of Contemporary French",
+            },
+            {
+              prefix: "Valibel",
+              name: "Discours et variation",
+              link: "https://journals.openedition.org/brussels/829?lang=en",
+              notes: "French spoken in Bruxelles",
+            },
+          ],
+        },
+        {
+          language: "German",
+          corpora: [
+            {
+              name: "The Kiel Corpus",
+              link: "https://www.isfas.uni-kiel.de/de/linguistik/forschung/kiel-corpus",
+            },
+            {
+              name: "KiDKo: KiezDeutsch-Korpus",
+              link: "http://www.kiezdeutschkorpus.de/",
+              notes: "German in a multilingual neighborhood of Berlin",
+            },
+          ],
+        },
+        {
+          language: "Hebrew",
+          corpora: [
+            {
+              name: "CoSIH: The Corpus of Spoken Israeli Hebrew",
+              link: "http://cosih.com/english/index.html",
+            },
+          ],
+        },
+        {
+          language: "Italian",
+          corpora: [
+            {
+              name: "LABLITA: Corpus of Spontaneous Spoken Italian",
+              link: "http://universal.elra.info/product_info.php?cPath=37_46&products_id=1472",
+            },
+          ],
+        },
+        {
+          language: "Lithuanian",
+          corpora: [
+            {
+              name: "Vilniečių interviu bazė “Kalba Vilnius”",
+              link: "http://kalbavilnius.sociolingvistika.lt/",
+              notes:
+                "database of sociolinguistic interviews \“Vilnius Speaking\”",
+            },
+          ],
+        },
+        {
+          language: "Portuguese",
+          corpora: [
+            {
+              name: "ALIP: Amostra Lingüística do Interior Paulista",
+              link: "https://alip.ibilce.unesp.br/",
+            },
+            {
+              name: "Amostra da Fala Paulistana",
+              link: "http://projetosp2010.fflch.usp.br/node/3",
+            },
+            {
+              name: "Several Portuguese Corpura",
+              link: "http://comet.fflch.usp.br/corporaportugues",
+            },
+          ],
+        },
+        {
+          language: "Swedish",
+          corpora: [
+            {
+              name: "The Swedish Spoken Language Corpus at Göteborg University",
+              link: "https://gupea.ub.gu.se/handle/2077/21546",
+            },
+          ],
+        },
+      ]
+        // sorted by language first
+        .toSorted((a, b) => a.language.localeCompare(b.language))
+        .map((lang) => (
+          <li>
+            {lang.language}
+            {lang.corpora.length == 1 ? (
+              // different displaying if the language has one corpora.
+              <>
+                {" – "}
+                <a href={lang.corpora[0].link}>{lang.corpora[0].name}</a>
+              </>
+            ) : (
+              <ul>
+                {
+                  // for the language with multiple corpora,
+                  lang.corpora
+                    // construct a comparable name first (prefix + the name without "The ")
+                    .map((corpus) => {
+                      corpus.nameCompare =
+                        (corpus.prefix || "") +
+                        corpus.name.match(/(The )?(.*)/)[2];
+                      return corpus;
+                    })
+                    // then sorted by that field
+                    .toSorted((a, b) =>
+                      a.nameCompare.localeCompare(b.nameCompare),
+                    )
+                    // and show each element
+                    .map((corpus) => (
+                      <li>
+                        {
+                          // show prefix if it has one
+                          corpus.prefix && `${corpus.prefix} – `
+                        }
+                        <a href={corpus.link}>{corpus.name}</a>
+                        {
+                          // show notes if it has one, with parenthesis
+                          corpus.notes && ` (${corpus.notes})`
+                        }
+                      </li>
+                    ))
+                }
+              </ul>
+            )}
+          </li>
+        ))
+    }
+  </ul>
+  <p class="has-medium-font-size"><strong>Sign Language</strong></p>
+  <ul class="wp-block-list">
+    <li>
+      <a href="http://www.bslcorpusproject.org/data/"
+        >BSLCP: British Sign Language Corpus Project</a
+      >
+    </li>
+  </ul>
+  <p class="has-medium-font-size"><strong>Multiple Languages</strong></p>
+  <ul class="wp-block-list">
+    <li>
+      <a href="https://childes.talkbank.org/"
+        >CHILDES: Child Language Data Exchange System</a
+      >&nbsp;(Spanish-English bilingual children)
+    </li>
+    <li>
+      <a href="https://elararchive.org/collections/"
+        >Endangered Languages Archive</a
+      >
+    </li>
+    <li>
+      <a href="https://ngn.artsci.utoronto.ca/HLVC/0_0_home.php"
+        >HLVC: Heritage Language Variation and Change Project&nbsp;</a
+      >(Various heritage languages spoken in Toronto)
+    </li>
+    <li>
+      <a href="https://www.ldc.upenn.edu/about"
+        >LDC: The Linguistic Data Consortium</a
+      >
+    </li>
+    <li>
+      <a
+        href="http://digitalhumanities.umass.edu/projects/new-england-corpus-heritage-and-second-language-speakers"
+        >The New England Corpus of Heritage and Second Language Speakers</a
+      >&nbsp;(Oral and written production of heritage and L2 speakers of Spanish
+      and Portuguese in New England)
+    </li>
+    <li>
+      <a href="http://www.cs.upc.edu/~nlp/wikicorpus/">Wikicorpus</a
+      >&nbsp;(Catalan, Spanish and English)
+    </li>
+  </ul>
+</Layout>
