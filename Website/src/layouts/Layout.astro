@@ -1,0 +1,43 @@
+---
+import Navbar from "../components/Navbar.astro";
+
+// import { getSession } from "auth-astro/server";
+// const session = await getSession(Astro.request);
+
+interface Props {
+  title?: string;
+}
+const props = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/jpeg" href="/icon.jpg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>
+      {props.title ? `${props.title} | MuHSiC` : "MuHSiC"}
+    </title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <header>
+      <Navbar />
+    </header>
+    <main>
+      {props.title && <h1>{props.title}</h1>}
+      <slot />
+    </main>
+    <footer>
+      <div>
+        <!-- <p>Made and maintained by <a href="https://napatsc.com">Napat Srichan</a></p> -->
+        <p>
+          &copy; 2023-{new Date().getFullYear()}, Multilingual Hispanic Speech
+          in California research group.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>
