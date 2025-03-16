@@ -1,0 +1,23 @@
+---
+// component for displaying email safely preventing bots from scraping text:
+// replacing "@" with the inline image.
+// Human perception is fine, bot would not see this as an email.
+import { Image } from "astro:assets";
+import at_logo from "./logo/at_logo.png";
+
+interface Props {
+  email: string;
+}
+const [username, domain] = Astro.props.email.split("@");
+---
+
+<span
+  >{username}<Image
+    src={at_logo}
+    alt="at"
+    width={16}
+    height={16}
+    style="position: relative; bottom: -2px;"
+    densities={[1, 2]}
+  />{domain}</span
+>

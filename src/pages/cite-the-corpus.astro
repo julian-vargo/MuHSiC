@@ -1,0 +1,34 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { Image } from "astro:assets";
+import TOS from "@/components/TOS.html";
+
+import ocean from "./img/ocean.jpeg";
+---
+
+<Layout title="Cite the Corpus">
+  <div style="background-color:#ffc500; padding: 2rem;">
+    <p>
+      When using the <b>MuHSiC corpus</b>, please cite using the following
+      format:
+    </p>
+    <p style="text-indent: -2rem; margin-left: 2rem;">
+      Amengual, M., Kim, J.-Y., &amp; Davidson, J. ({new Date().getFullYear()}).
+      Multilingual Hispanic Speech in California (MuHSiC). University of
+      California, Santa Cruz. [https://muhsic.acad.ucsc.edu/]
+    </p>
+  </div>
+
+  <h2>Terms and Conditions</h2>
+  <TOS />
+
+  <figure>
+    <Image
+      style="width: 100%; object-fit: cover;"
+      src={ocean}
+      alt="green open field and blue sky with cloud"
+      width={1468}
+      height={534}
+    />
+  </figure>
+</Layout>
