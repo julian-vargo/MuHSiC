@@ -5,10 +5,10 @@
 <h2>Welcome to the MuHSiC Github, the home of all documentation for corpus processing, web management, and data analysis</h2>  
 <h3>
   
-  [Looking for our website? Find it here](https://muhsic.acad.ucsc.edu/) 
+  [Looking for our main website? Find it here.](https://muhsic.acad.ucsc.edu/) 
 
 </h3>  
-
+<br>
 <h2>Breakdown of the GitHub Repository</h2>  
 <h3>There are 4 folders containing code and files from four different aspects of the corpus: Data Analysis, Data Processing, Images, and Website Code.</h3>  
 
