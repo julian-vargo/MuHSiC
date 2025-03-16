@@ -3,4 +3,4 @@
 
 <h2>Welcome to the MuHSiC Github, the home of all documentation for corpus processing, web management, and data analysis</h2>  
 <h3>Looking for our website? Find it here:</h3>  
-<h4>https://muhsic.acad.ucsc.edu/</h4>
+<h4>[MuHSiC Corpus Website](https://muhsic.acad.ucsc.edu/)</h4>
