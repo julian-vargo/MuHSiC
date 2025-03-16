@@ -1,2 +1,2 @@
 # MuHSiC - Multilingual Hispanic Speech in California
-Images/Logo_MuHSiC_bicolor.png
+![Alt text]Images/Logo_MuHSiC_bicolor.png
