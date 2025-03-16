@@ -1,2 +1,2 @@
-# MuHSiC
-Documentation for the Multilingual Hispanic Speech in California Corpus
+# MuHSiC - Multilingual Hispanic Speech in California
+(main/images/Logo_MuHSiC_bicolor.png)
