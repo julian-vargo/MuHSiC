@@ -13,8 +13,8 @@ Commands for download the code from GitHub.
 
 ```sh
 # Note that cloning this way will not have the push permission
-git clone https://github.com/anonymaew/muhsic.git
-cd muhsic
+git clone https://github.com/julian-vargo/MuHSiC.git
+cd MuHSiC/Website
 ```
 
 Then, install libraries. (should only do this once)
@@ -43,7 +43,8 @@ secret**.
 
 ## Development
 
-The command to start the dev server. The website is available at <http://localhost:4321>.
+The command to start the dev server. The dev website will be available at
+<http://localhost:4321>.
 
 ```sh
 bun --bun run dev
