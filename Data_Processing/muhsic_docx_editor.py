@@ -7,6 +7,8 @@
 #Set your input folder path below
 #Set your MuHSiC logo image path below
 #Save the document, then run the script
+#If you are using this code and are in a non UC campus, line 70 will not work for you, please update accordingly.
+#This file overwrites your original version, so please store a backup before running.
 
 input_folder = r"C:\Users\julia\Downloads\research\muhsic\docx"
 image_path = r"C:\Users\julia\Downloads\research\muhsic\docx\Logo_MuHSiC_bicolor.png"
@@ -28,19 +30,14 @@ def export_pdf(file_path):
     output_dir = os.path.dirname(abs_path)  # Save PDF in the same directory
 
     try:
-        if sys.platform.startswith("win"):  # Windows
+        if sys.platform.startswith("win"):
             soffice_cmd = r"C:\Program Files\LibreOffice\program\soffice.exe"
-        else:  # macOS/Linux
+        else:  # macOS/Linux, not sure if this works.
             soffice_cmd = "libreoffice"
-
-        # Run LibreOffice to convert .docx to .pdf
         result = subprocess.run(
             [soffice_cmd, "--headless", "--convert-to", "pdf", "--outdir", output_dir, abs_path], 
             capture_output=True, text=True, check=True
         )
-
-        #print(result.stdout)
-
     except FileNotFoundError:
         print("Error: LibreOffice is not installed or not found. Please install LibreOffice.")
     except subprocess.CalledProcessError as e:
@@ -83,20 +80,6 @@ def alter_initial_speaker_code(file_path):
         print(f"Please add a speaker/file code for {file_path}")
         exit()
     document.save(file_path)
-
-# def correct_first_paragraph_number(file_path):
-#     document = Document(file_path)
-#     if document.paragraphs:
-#         first_paragraph = document.paragraphs[0]
-#         text = first_paragraph.text
-#         match = re.search(r"_(\d{1,2})_", text)
-#         if match:
-#             number = match.group(1)
-#             if len(number) == 1:
-#                 corrected_number = f"_{number.zfill(2)}_"
-#                 text = re.sub(r"_(\d{1,2})_", corrected_number, text, count=1)
-#                 first_paragraph.text = text
-#     document.save(file_path)
 
 def correct_first_paragraph_number(file_path):
     document = Document(file_path)
@@ -163,24 +146,16 @@ def insert_logo(file_path, image_path):
     new_paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
     document.save(file_path)
 
-#For mess-ups when I need to bulk remove the image. Adds some flexibility to the script
+#For mess-ups when I need to bulk remove the image. Adds some flexibility to the script but makes processing take longer.
 def remove_images_from_docx(file_path):
     document = Document(file_path)
     paragraphs_to_remove = []
-
-    # Get namespace mappings from the document
-    namespace = {'w': document.part.element.nsmap['w']}  # Fix for namespace issue
-
-    # Scan all paragraphs for images
+    namespace = {'w': document.part.element.nsmap['w']}
     for paragraph in document.paragraphs:
         if any(run._element.findall(".//w:drawing", namespace) for run in paragraph.runs):
             paragraphs_to_remove.append(paragraph)
-
-    # Remove identified paragraphs
     for paragraph in paragraphs_to_remove:
         paragraph._element.getparent().remove(paragraph._element)
-
-    # Overwrite the file with modifications
     document.save(file_path)
     print(f"Processed: {os.path.basename(file_path)} (Images removed)")
 
@@ -196,8 +171,6 @@ process_folder(input_folder)
 if confirm_proceed():
     print("Beginning docx editing. This may take a while. Do not exit.")
     for filename in os.listdir(input_folder):
-        #The Python docx package makes temporary files starting with ~$
-        #The following 'if' statement makes sure that these locked temporary files aren't opened in LibreOffice
         if filename.startswith("~$"):
             continue
         if filename.endswith(".docx"):
