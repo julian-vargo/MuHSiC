@@ -6,7 +6,7 @@ from pathlib import Path
 from datetime import datetime, timedelta
 import glob
 
-folder = r"C:\Users\julia\Downloads\research\cook_dispersion\unaligned_textgrid\New folder"
+folder = r"C:\Users\julia\Downloads\research\muhsic"
 
 def process_entirety(srt_file):
     def is_integer(line):
