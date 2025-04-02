@@ -1,0 +1,11 @@
+Standardization system for the educational metadata for the corpus:
+
+No Schooling
+Some Primary School (Kinder through 8th)
+Completed Primary School (Finished 8th)
+Some High School (Between 9th - 12th)
+Completed High School
+Some College (Associates Degree or incomplete Bachelor's)
+Completed College (Completed Bachelor's)
+Some Advanced Education (Some Master's or Doctorate Education)
+Completed Advanced Education (Completed Master's or Completed Doctorate)
