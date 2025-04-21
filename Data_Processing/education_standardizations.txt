@@ -9,3 +9,4 @@ Some College (Associates Degree or incomplete Bachelor's)
 Completed College (Completed Bachelor's)
 Some Advanced Education (Some Master's or Doctorate Education)
 Completed Advanced Education (Completed Master's or Completed Doctorate)
+Unknown
