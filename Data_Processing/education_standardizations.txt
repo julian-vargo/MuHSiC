@@ -4,9 +4,9 @@ No Schooling
 Some Primary School (Kinder through 7th)
 Completed Primary School (Finished 8th)
 Some High School (Between 9th - 11th)
-Completed High School (Finished 12th)
-Some College (Associates Degree or incomplete Bachelor's)
-Completed College (Completed Bachelor's)
+Completed High School (12th)
+Some College (Associates Degree, incomplete Bachelor's, community college, under 4 years of college)
+Completed College ("college", "university", Completed Bachelor's, 4 years college or greater)
 Some Advanced Education (Some Master's or Doctorate Education)
 Completed Advanced Education (Completed Master's or Completed Doctorate)
-Unknown
+Unknown (put age instead of grade, non-academic licenses, blanks)
