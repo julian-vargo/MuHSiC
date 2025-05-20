@@ -10,56 +10,169 @@ import mark_profile from "./img/mark_profile.jpg";
 import justin_profile from "./img/justin_profile.jpg";
 import baskin_img from "./img/baskin.jpg";
 import sc_pano from "./img/sc_pano.jpeg";
+import amengual_training from "./img/amengual_training.jpg";
+import TextCarousel from '../components/TextCarousel.astro';
+
+const messages = [
+  "81 researchers",
+  "700 hours of speech",
+  "Three universities",
+  "100,000+ cells of metadata",
+  "14 million phonemes",
+];
 ---
 
 <Layout>
-  <div
-    style="background-image: url('/img/baskin.jpg'); background-size: cover; padding: 4rem;"
-  >
-    <p
-      style="padding:2rem;background-color:#f5bd2f; align-self: center;"
-      class="justify"
-    >
-      <b>The MuHSiC (Multilingual Hispanic Speech in California)</b> project is a
-      robust and linguistically rich corpus of bilingual Spanish-English speech samples
-      culled from sociolinguistic interviews and naturalistic conversations among
-      speakers of diverse social profiles and regional origins throughout the state
-      of California. Speech data were collected by a team of undergraduate students
-      trained by graduate students and the 3 faculty PIs, specifically focusing on
-      familiar acquaintances to maximize participants’ comfort and naturalness during
-      the recording session. Comprised of 35-minute recordings in each of Spanish
-      and English from California Spanish-English bilinguals, this corpus provides
-      an invaluable linguistic resource for language scholars interested in examining
-      the phonology, phonetics, morphology, syntax, and lexicon of Spanish-English
-      bilinguals in California.
-    </p>
+  <div style="background-image: url('/img/baskin.jpg');background-size: cover; padding: 4rem;border-radius: 16px;">
+    <div class="welcome-text">
+      Multilingual Hispanic Speech in California
+    </div>
+    <style>
+      .welcome-text {
+        text-align: center;
+        font-size: 36px;
+        color:white;
+        line-height: 1.25;
+        font-weight: bold;
+      }
+    </style>
   </div>
 
-  <div class="grid-2">
-    <div>
-      <p class="justify">
+<p></p>
+<div class="grid-2">
+  <div class="carousel-wrapper">
+    <img src="/img/amengual_training.jpg" alt="picture of students being trained" class="carousel-bg">
+    <div class="carousel-text">
+      <p id="carousel-text">{messages[0]}</p>
+    </div>
+  </div>
+  <div>
+    <p class="justify">
+        <b>The MuHSiC (Multilingual Hispanic Speech in California)</b> project is a
+        linguistically rich corpus of bilingual Spanish-English speech
+        culled from sociolinguistic interviews and naturalistic conversations from
+        speakers of diverse social profiles and regional origins throughout the state
+        of California. Speech data were collected by undergraduate students
+        trained by graduate students and the 3 faculty PIs. Conversations consist of
+        familiar to interviewers, maximizing recording naturalness. Comprised of 600 70-minute recordings of California Spanish-English bilinguals, 
+        half in Spanish and half in English, this corpus provides
+        an invaluable linguistic resource for language scholars interested in examining
+        the phonology, phonetics, morphology, syntax, and lexicon of Spanish-English
+        bilinguals in California.</p>
+  </div>
+</div>
+<style>
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+.image-column {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+</style>
+<style>
+.carousel-wrapper {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: visible;
+}
+
+.carousel-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 16px;
+}
+
+.carousel-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 1rem;
+  z-index: 2;
+  line-height: 1.4;
+  overflow: visible;
+}
+</style>
+  
+<script type="module" client:load>
+  const messages = [
+  "81 researchers",
+  "700 hours of speech",
+  "Three universities",
+  "100,000+ cells of metadata",
+  "14 million phonemes"];
+
+  const textEl = document.getElementById("carousel-text");
+  let i = 0;
+  setInterval(() => {
+    textEl.classList.remove("fade-in");
+    textEl.classList.add("fade-out");
+    setTimeout(() => {
+      i = (i + 1) % messages.length;
+      textEl.textContent = messages[i];
+      textEl.classList.remove("fade-out");
+      textEl.classList.add("fade-in");}, 1000);}, 5000);
+</script>
+
+<style>
+.carousel {
+  text-align: center;
+  font-size: 1.5rem;
+  padding: 1rem;
+  font-weight: bold;
+  color: #333;
+  min-height: 2.5rem;
+  overflow: visible;
+}
+
+.fade-in {animation: fadeInLeft 0.5s ease forwards;}
+.fade-out {animation: fadeOutLeft 0.5s ease forwards;}
+
+@keyframes fadeOutLeft {
+  from {opacity: 1;clip-path: inset(0% 0% 0% 0%);}
+  to {opacity: 0;clip-path: inset(0% 100% 0% 0%);}}
+@keyframes fadeInLeft {
+  from {opacity: 0;clip-path: inset(0% 100% 0% 0%);}
+  to {opacity: 1;clip-path: inset(0% 0% 0% 0%);}}
+</style>
+
+<div class="grid-2">
+  <div> 
+    <p class="justify">
         The Multilingual Hispanic Speech in California Corpus has been made
         possible in part by a <strong
           >Multicampus Research Programs and Initiatives Grant (MRPI Grant
           M23PL5866)</strong
-        > awarded to Mark Amengual, Ji Young Kim, and Justin Davidson.
-      </p>
-      <p>
+        > awarded to Mark Amengual, Ji Young Kim, and Justin Davidson.</p>
+      <p class="justify">
         Any views, findings, conclusions, or recommendations expressed in this
         website and project, do not necessarily represent those of the
-        University of California.
-      </p>
-    </div>
-    <div>
-      <figure id="login" style="cursor: pointer;">
-        <img
-          src="https://templatecampuspress.sites.ucsc.edu/files/2024/12/Screen-Shot-2024-11-13-at-2.42.21-PM.png"
-          alt=""
-          width="360px"
-        />
-      </figure>
-    </div>
+        University of California.</p>
+  </div>   
+<div style="display: flex; justify-content: center; align-items: center;">
+    <figure id="login" style="cursor: pointer;">
+      <img
+        src="https://templatecampuspress.sites.ucsc.edu/files/2024/12/Screen-Shot-2024-11-13-at-2.42.21-PM.png"
+        alt=""
+        width="240px"
+        style="border-radius: 16px;"
+      />
+    </figure>
   </div>
+</div>
 
   <h2>Principal Investigators</h2>
   <div class="grid-3" style="line-height:1.2rem;">
@@ -72,6 +185,7 @@ import sc_pano from "./img/sc_pano.jpeg";
           university: "University of California, Santa Cruz",
           orcid: "0000-0003-2007-9687",
           website: "https://markamengual.weebly.com/",
+          email: "amengual@ucsc.edu"
         },
         {
           name: "Dr. Ji Young Kim",
@@ -80,6 +194,7 @@ import sc_pano from "./img/sc_pano.jpeg";
           university: "University of California, Los Angeles",
           orcid: "0000-0002-5708-6461",
           website: "https://spanport.ucla.edu/person/ji-young-kim/",
+          email: "jiyoungkim@ucla.edu",
         },
         {
           name: "Dr. Justin Davidson",
@@ -87,8 +202,8 @@ import sc_pano from "./img/sc_pano.jpeg";
           department: "Department of Spanish and Portuguese",
           university: "University of California, Berkeley",
           orcid: "0000-0002-5708-6461",
-          website:
-            "https://spanish-portuguese.berkeley.edu/people/faculty/justin-davidson",
+          website: "https://spanish-portuguese.berkeley.edu/people/faculty/justin-davidson",
+          email: "justindavidson@berkeley.edu",
         },
       ].map((person) => (
         <div style="text-align: center;">
@@ -98,6 +213,7 @@ import sc_pano from "./img/sc_pano.jpeg";
               alt={`${person.name} portrait`}
               width={150}
               height={200}
+              style="border-radius: 16px;"
             />
           </figure>
           <div>
@@ -119,6 +235,7 @@ import sc_pano from "./img/sc_pano.jpeg";
             </p>
             <p>{person.department}</p>
             <p>{person.university}</p>
+            <p> <SafeEmail email={person.email} /> </p>
             <p>
               <a href={person.website} target="_blank" rel="noopener">
                 <Image
@@ -136,7 +253,7 @@ import sc_pano from "./img/sc_pano.jpeg";
     }
   </div>
 
-  <h2>Contact Us</h2>
+  <!-- <h2>Contact Us</h2>
   <ul>
     <li>
       Dr. Ji Young Kim (University of California, Los Angeles)
@@ -150,9 +267,9 @@ import sc_pano from "./img/sc_pano.jpeg";
       Dr. Mark Amengual (University of California, Santa Cruz)
       <SafeEmail email="amengual@ucsc.edu" />
     </li>
-  </ul>
+  </ul> -->
 
-  <figure>
+  <!-- <figure>
     <Image
       style="width: 100%; object-fit: cover;"
       src={sc_pano}
@@ -160,7 +277,7 @@ import sc_pano from "./img/sc_pano.jpeg";
       width={1920}
       height={743}
     />
-  </figure>
+  </figure> -->
 
   <script>
     const { signIn } = await import("auth-astro/client");
