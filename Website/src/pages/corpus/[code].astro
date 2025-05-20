@@ -26,9 +26,11 @@ const [table, files] = (
     <audio
       controls
       controlslist="nodownload"
-      src={files["en_wav"]
-        ? `${nocodbHost}/${files["en_wav"][0]["signedPath"]}`
-        : ""}
+      src={files["en_lossy"]
+        ? `${nocodbHost}/${files["en_lossy"][0]["signedPath"]}`
+        : files["en_wav"]
+          ? `${nocodbHost}/${files["en_wav"][0]["signedPath"]}`
+          : ""}
       style="height: 120px; width: 100%;"
     >
     </audio>
@@ -45,9 +47,11 @@ const [table, files] = (
     <audio
       controls
       controlslist="nodownload"
-      src={files["es_wav"]
-        ? `${nocodbHost}/${files["es_wav"][0]["signedPath"]}`
-        : ""}
+      src={files["es_lossy"]
+        ? `${nocodbHost}/${files["es_lossy"][0]["signedPath"]}`
+        : files["es_wav"]
+          ? `${nocodbHost}/${files["es_wav"][0]["signedPath"]}`
+          : ""}
       style="height: 120px; width: 100%;"
     >
     </audio>
@@ -92,8 +96,8 @@ const [table, files] = (
           >
             <a
               href={
-                file.file_meta
-                  ? `${nocodbHost}/${file.file_meta["signedPath"]}`
+                file.file_meta[0]
+                  ? `${nocodbHost}/${file.file_meta[0]["signedPath"]}`
                   : "#"
               }
               download
