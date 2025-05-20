@@ -1,0 +1,49 @@
+---
+import { read } from "@/lib/nocodb";
+import { stringToGeo } from "@/lib/common";
+
+export const prerender = false;
+
+const participants = Astro.props.participants;
+const locations = await read({ table: "mcwkq8j4v11e35w" });
+const summarize = participants.map((participant) => {
+  const city = participant["participant_location"];
+  const places = locations.filter((i) => i.place === city);
+  const place =
+    places.length < 1 || places[0].problem ? { pos: "35;-124" } : places[0];
+  var title = `${city}:<br/><a href="corpus/${participant["participant_code"]}">${participant["participant_code"]}</a>`;
+  return {
+    title,
+    ...stringToGeo(place.pos),
+  };
+});
+---
+
+<link rel="stylesheet" href="/leaflet/leaflet.css" />
+<script is:inline src="/leaflet/leaflet.js"></script>
+<link rel="stylesheet" href="/leaflet/MarkerCluster.css" />
+<link rel="stylesheet" href="/leaflet/MarkerCluster.Default.css" />
+<script is:inline src="/leaflet/leaflet.markercluster.js"></script>
+<div id="map" style="height: 540px;"></div>
+<pre id="data" style="display:none">{JSON.stringify(summarize)}</pre>
+<script defer>
+  var map = L.map("map").setView([37.4, -119.5], 6);
+  // map.setMaxBounds(map.getBounds());
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    minZoom: 4,
+    maxZoom: 14,
+    attribution:
+      '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  }).addTo(map);
+
+  var markers = L.markerClusterGroup();
+  const data = JSON.parse(document.querySelector("#data").innerText);
+  data.forEach((part) => {
+    var marker = L.marker(new L.LatLng(part.lat, part.lon), {
+      title: part.title,
+    });
+    marker.bindPopup(part.title);
+    markers.addLayer(marker);
+  });
+  map.addLayer(markers);
+</script>

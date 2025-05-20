@@ -167,6 +167,9 @@ h1 {
   padding: 1em 1.5em;
 }
 
+main {
+  position: relative;
+}
 main,
 footer {
   margin: 1rem auto;
@@ -280,4 +283,9 @@ table {
     width: 180px;
   }
   line-height: 1.5;
+}
+
+#map {
+  width: calc(100vw - 2rem);
+  left: calc((min(100vw - 2rem,var(--page-width)) + 2rem - 100vw) / 2);
 }
