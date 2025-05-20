@@ -1,5 +1,4 @@
 ---
-// No props for now, hardcoded messages
 const messages = [
   "Welcome to MuHSiC!",
   "Multilingual Speech in California.",
@@ -26,7 +25,7 @@ const messages = [
   setInterval(() => {
     i = (i + 1) % messages.length;
     textEl.textContent = messages[i];
-  }, 3000); // change text every 3 seconds
+  }, 5000);
 </script>
 
 <style>
