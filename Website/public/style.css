@@ -254,6 +254,44 @@ table {
   }
 }
 
+.carousel-wrapper {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  overflow: visible;
+}
+
+.carousel-bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 16px;
+}
+
+.carousel-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  padding: 1rem;
+  z-index: 2;
+  line-height: 1.4;
+  overflow: visible;
+}
+
+.fade-in {
+  animation: fadeInLeft 0.5s ease forwards;
+}
+.fade-out {
+  animation: fadeOutLeft 0.5s ease forwards;
+}
+
+
 .big-button {
   font-size: large;
   background-color: var(--ucsc-gold);
