@@ -160,6 +160,7 @@ h5,
 h6 {
   padding: 1em;
   background-color: var(--ucsc-gold);
+  border-radius: 16px;
 }
 
 h1 {
