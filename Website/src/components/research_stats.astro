@@ -1,0 +1,40 @@
+---
+// No props for now, hardcoded messages
+const messages = [
+  "Welcome to MuHSiC!",
+  "Multilingual Speech in California.",
+  "Explore our open-access corpus.",
+  "Developed by UC researchers."
+];
+---
+
+<div class="carousel">
+  <p id="carousel-text">{messages[0]}</p>
+</div>
+
+<script type="module" client:load>
+  const messages = [
+    "Welcome to MuHSiC!",
+    "Multilingual Speech in California.",
+    "Explore our open-access corpus.",
+    "Developed by UC researchers."
+  ];
+
+  let i = 0;
+  const textEl = document.getElementById("carousel-text");
+
+  setInterval(() => {
+    i = (i + 1) % messages.length;
+    textEl.textContent = messages[i];
+  }, 3000); // change text every 3 seconds
+</script>
+
+<style>
+.carousel {
+  text-align: center;
+  font-size: 1.5rem;
+  padding: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+</style>
