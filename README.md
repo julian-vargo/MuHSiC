@@ -5,7 +5,7 @@
 
 <h3>
   
-  [Looking for our main website? Find it here.](https://muhsic.acad.ucsc.edu/) 
+  [Looking for our main website? Find it here.](https://muhsic.ucsc.edu/) 
 
 </h3>  
 <br>
