@@ -6,8 +6,8 @@
 }
 
 @font-face {
-  font-family: 'PublicSans';
-  src: url('/fonts/PublicSans-Regular.woff2') format('woff2');
+  font-family: "PublicSans";
+  src: url("/fonts/PublicSans-Regular.woff2") format("woff2");
 }
 
 body {
@@ -52,54 +52,54 @@ nav {
   max-width: var(--page-width);
   font-size: medium;
 
-  >ul {
+  > ul {
     display: flex;
     align-items: center;
     margin: 0;
 
-    >li {
+    > li {
       display: inline;
       width: fit-content;
-      position:relative;
+      position: relative;
       ul {
-        display:none;
+        display: none;
         background-color: var(--ucsc-blue);
         position: absolute;
         left: -1rem;
         top: 1.5rem;
         padding: 0.5rem;
         border-radius: 0.4rem;
-        li{
-          padding:0.3rem 0.5rem;
+        li {
+          padding: 0.3rem 0.5rem;
           width: 120px;
         }
       }
     }
 
-    li:hover{
-      ul{
-        display:block;
+    li:hover {
+      ul {
+        display: block;
       }
     }
   }
   a {
     text-decoration: none;
   }
-  li{
+  li {
     padding: 0.2rem 0.5rem;
   }
 
-  >ul {
+  > ul {
     @container (width < 720px) {
       display: none;
     }
   }
 
-  ul{
-    padding:0px;
+  ul {
+    padding: 0px;
   }
   li::marker {
-    content: '';
+    content: "";
   }
 
   details {
@@ -111,14 +111,14 @@ nav {
     }
 
     summary::marker {
-      content: '';
+      content: "";
     }
 
     @container (width >=720px) {
       display: none;
     }
 
-    >ul {
+    > ul {
       width: 180px;
       flex-direction: column;
       padding: 1rem 2rem;
@@ -131,12 +131,12 @@ nav {
 
       li {
         align-self: normal;
-        ul{
-          display:none;
+        ul {
+          display: none;
         }
       }
-      li:hover{
-        ul{
+      li:hover {
+        ul {
           display: block;
         }
       }
@@ -145,9 +145,9 @@ nav {
 
   button {
     background-color: transparent;
-    color:white;
-    font-size:medium;
-    border:none;
+    color: white;
+    font-size: medium;
+    border: none;
     cursor: pointer;
   }
 }
@@ -201,12 +201,11 @@ td {
   padding: 0.5rem 1rem;
 }
 
-
 tr {
   border-bottom: 1px solid lightgrey;
 }
 
-thead>tr {
+thead > tr {
   border-top: 2px solid lightgrey;
   border-bottom: 2px solid lightgrey;
 }
@@ -223,14 +222,13 @@ tbody.selectible {
 }
 
 table {
-  tr{
+  tr {
     background-color: #f4f4f4;
   }
-  tr:nth-of-type(2n+1) {
+  tr:nth-of-type(2n + 1) {
     background-color: #e8e8e8;
   }
 }
-
 
 .grid-2 {
   display: grid;
@@ -311,7 +309,6 @@ table {
   }
 }
 
-
 .big-button {
   font-size: large;
   background-color: var(--ucsc-gold);
@@ -319,24 +316,24 @@ table {
   padding: 1rem;
   margin: 2rem;
   width: 240px;
-  cursor:pointer;
+  cursor: pointer;
 }
 
-.big-button:hover{
+.big-button:hover {
   background-color: var(--ucsc-blue);
-  color:white;
+  color: white;
 }
 
-.center{
-  margin:auto;
+.center {
+  margin: auto;
 }
 
 .justify {
   text-align: justify;
 }
 
-.input-filter{
-  >span{
+.input-filter {
+  > span {
     display: inline-block;
     width: 180px;
   }
@@ -345,5 +342,5 @@ table {
 
 #map {
   width: calc(100vw - 2rem);
-  left: calc((min(100vw - 2rem,var(--page-width)) + 2rem - 100vw) / 2);
+  left: calc((min(100vw - 2rem, var(--page-width)) + 2rem - 100vw) / 2);
 }

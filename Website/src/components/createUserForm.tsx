@@ -19,9 +19,18 @@ export default function CreateUserForm() {
 
   return (
     <form onSubmit={submit}>
-      <label>Email: <input type="email" name="email" required /></label><br />
-      <label>Username: <input type="text" name="username" required /></label><br />
-      <label>Password: <input type="password" name="password" required /></label><br />
+      <label>
+        Email: <input type="email" name="email" required />
+      </label>
+      <br />
+      <label>
+        Username: <input type="text" name="username" required />
+      </label>
+      <br />
+      <label>
+        Password: <input type="password" name="password" required />
+      </label>
+      <br />
       <button>Create User</button>
       {responseMessage && <p>{responseMessage}</p>}
     </form>

@@ -9,7 +9,7 @@ export const read = async ({
   id,
   fields,
   view,
-  table
+  table,
 }: {
   id?: string;
   fields?: string[];
@@ -17,7 +17,7 @@ export const read = async ({
   table?: string;
 }): Promise<any[]> => {
   const res = await fetch(
-    `${nocodbHost}/api/v2/tables/${table||tableId}/records?${id !== undefined ? `where=%28participant_code%2Ceq%2C${id}%29&` : ""}limit=999&${arrayToQuery("fields", fields)}${view ? `&viewId=${view}` : ""}`,
+    `${nocodbHost}/api/v2/tables/${table || tableId}/records?${id !== undefined ? `where=%28participant_code%2Ceq%2C${id}%29&` : ""}limit=999&${arrayToQuery("fields", fields)}${view ? `&viewId=${view}` : ""}`,
     {
       headers: {
         accept: "application/json",

@@ -7,11 +7,14 @@ import banner from "./logo/banner.jpg";
 ---
 
 <style>
-  nav ul {position: relative;}
+  nav ul {
+    position: relative;
+  }
   nav ul ul {
     position: absolute;
     z-index: 1000;
-    background: #003c6c;}
+    background: #003c6c;
+  }
 </style>
 
 <nav>
@@ -44,11 +47,13 @@ import banner from "./logo/banner.jpg";
       <li><a href="/cite-the-corpus">Cite the Corpus</a></li>
       <li><a href="/links-to-other-corpora">Links to Other Corpora</a></li>
       <li>
-        {session?.user ? (
-          <a href="/profile">Profile</a>
-        ) : (
-          <SignIn provider="keycloak">Log In</SignIn>
-        )}
+        {
+          session?.user ? (
+            <a href="/profile">Profile</a>
+          ) : (
+            <SignIn provider="keycloak">Log In</SignIn>
+          )
+        }
       </li>
     </ul>
   </details>
@@ -70,11 +75,13 @@ import banner from "./logo/banner.jpg";
     <li><a href="/cite-the-corpus">Cite the Corpus</a></li>
     <li><a href="/links-to-other-corpora">Links to Other Corpora</a></li>
     <li>
-      {session?.user ? (
-        <a href="/profile">Profile</a>
-      ) : (
-        <SignIn provider="keycloak">Log In</SignIn>
-      )}
+      {
+        session?.user ? (
+          <a href="/profile">Profile</a>
+        ) : (
+          <SignIn provider="keycloak">Log In</SignIn>
+        )
+      }
     </li>
   </ul>
 </nav>

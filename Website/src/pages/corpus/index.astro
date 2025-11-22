@@ -1,164 +1,189 @@
 ---
-import { read } from '@/lib/nocodb';
-import Layout from '@/layouts/Layout.astro';
-import {canRead} from '@/lib/auth';
-import Map from '@/components/Map.astro';
+import { read } from "@/lib/nocodb";
+import Layout from "@/layouts/Layout.astro";
+import { canRead } from "@/lib/auth";
+import Map from "@/components/Map.astro";
 
-import { getSession } from 'auth-astro/server';
-export const prerender = false
+import { getSession } from "auth-astro/server";
+export const prerender = false;
 
 const session = await getSession(Astro.request);
-const participants = (await read({fields:["participant_code","sex","speaker_group","language_dominance","birth_country","year_of_birth","adjusted_education","mother_birth_country","father_birth_country","is_public_sample","publish", "participant_location"]}))
-  .filter(part => (canRead(session) || part.is_public_sample) && part.publish)
+const participants = (
+  await read({
+    fields: [
+      "participant_code",
+      "sex",
+      "speaker_group",
+      "language_dominance",
+      "birth_country",
+      "year_of_birth",
+      "adjusted_education",
+      "mother_birth_country",
+      "father_birth_country",
+      "is_public_sample",
+      "publish",
+      "participant_location",
+    ],
+  })
+).filter((part) => (canRead(session) || part.is_public_sample) && part.publish);
+const filter = () => {
+  const code = document.querySelector("#code")?.value ?? "";
+  const sex = document.querySelector("#sex")?.value ?? "";
+  const g1 = document.querySelector("#g1")?.checked ?? false;
+  const g1_5 = document.querySelector("#g1_5")?.checked ?? false;
+  const g2 = document.querySelector("#g2")?.checked ?? false;
+  const g3 = document.querySelector("#g3")?.checked ?? false;
+  const lang = document.querySelector("#lang")?.value ?? "";
+  const yob = document.querySelector("#yob")?.value ?? "";
+  const pob = document.querySelector("#pob")?.value ?? "";
+  const edu = document.querySelector("#edu")?.value ?? "";
+  const mom_birth = document.querySelector("#mom-birth")?.value ?? "";
+  const dad_birth = document.querySelector("#dad-birth")?.value ?? "";
+
+  Array.from(document.querySelectorAll(".selectible > tr")).forEach((i) => {
+    const i_code = i.querySelector("td")?.innerText ?? "";
+    const i_sex = i.querySelector(".data_sex")?.innerText ?? "";
+    const i_gen = i.querySelector(".data_speaker_group")?.innerText ?? "";
+    const i_lang = i.querySelector(".data_language_dominance")?.innerText ?? "";
+    const i_yob = i.querySelector(".data_year_of_birth")?.innerText ?? "";
+    const i_pob = i.querySelector(".data_birth_country")?.innerText ?? "";
+    const i_edu = i.querySelector(".data_adjusted_education")?.innerText ?? "";
+    const i_mom_birth =
+      i.querySelector(".data_mother_birth_country")?.innerText ?? "";
+    const i_dad_birth =
+      i.querySelector(".data_father_birth_country")?.innerText ?? "";
+
+    const included =
+      i_code.includes(code) &&
+      (sex === "" || i_sex === sex) &&
+      (lang === "" || i_lang === lang) &&
+      ((!g1 && !g1_5 && !g2 && !g3) ||
+        (g1 && i_gen === "G1") ||
+        (g1_5 && i_gen === "G1.5") ||
+        (g2 && i_gen === "G2") ||
+        (g3 && i_gen === "G3")) &&
+      (yob === "" || i_yob === yob) &&
+      (pob === "" || i_pob === pob) &&
+      (edu === "" || i_edu === edu) &&
+      (mom_birth === "" || i_mom_birth === mom_birth) &&
+      (dad_birth === "" || i_dad_birth === dad_birth);
+
+    i.style.display = included ? "" : "none";
+  });
+};
 ---
 
 <Layout width="full">
-  <Map participants={participants}/>
+  <Map participants={participants} />
   <div class="width-med">
-  <h1>Sample data</h1>
-  { canRead(session) &&
-  <>
-    <script>
-    const filter=()=>{
-      const code = document.querySelector('#code').value;
-      const sex = document.querySelector('#sex').value;
-      const g1 = document.querySelector('#g1').checked;
-      const g1_5 = document.querySelector('#g1_5').checked;
-      const g2 = document.querySelector('#g2').checked;
-      const g3 = document.querySelector('#g3').checked;
-      const lang = document.querySelector('#lang').value;
-      const yob = document.querySelector('#yob').value;
-      const pob = document.querySelector('#pob').value;
-      const edu = document.querySelector('#edu').value;
-      const mom_birth = document.querySelector('#mom-birth').value;
-      const dad_birth = document.querySelector('#dad-birth').value;
-      console.log(mom_birth,dad_birth)
-
-      Array.from(document.querySelectorAll(".selectible > tr"))
-        .forEach(i => {
-          const i_code = i.querySelector("td").innerText;
-          const i_sex = i.querySelector(".data_sex").innerText;
-          const i_gen = i.querySelector(".data_speaker_group").innerText;
-          const i_lang=i.querySelector(".data_language_dominance").innerText;
-          const i_yob=i.querySelector(".data_year_of_birth").innerText;
-          const i_pob=i.querySelector(".data_birth_country").innerText;
-          const i_edu=i.querySelector(".data_adjusted_education").innerText;
-          const i_mom_birth=i.querySelector(".data_mother_birth_country").innerText;
-          const i_dad_birth=i.querySelector(".data_father_birth_country").innerText;
-
-          // TODO: some comments on filter mechanism
-          const included = (i_code.includes(code)) &&
-                          (sex === "" || i_sex === sex) &&
-                          (lang === "" || i_lang === lang) &&
-                          (
-                            (!g1&& !g1_5 && !g2 && !g3) || 
-                            (g1 && i_gen === "G1") ||
-                            (g1_5 && i_gen === "G1.5") ||
-                            (g2 && i_gen === "G2") ||
-                            (g3 && i_gen === "G3")
-                          ) &&
-                          (yob === "" || i_yob === yob) &&
-                          (pob === "" || i_pob === pob) &&
-                          (edu === "" || i_edu === edu) &&
-                          (mom_birth === "" || i_mom_birth === mom_birth) &&
-                          (dad_birth === "" || i_dad_birth === dad_birth)
-
-          i.style.display = included ? "": "none";
-        });
+    <h1>Sample data</h1>
+    {
+      canRead(session) && (
+        <>
+          <label class="input-filter">
+            <>
+              <span>Participant Code</span>
+              <input type="text" id="code" />
+            </>
+          </label>
+          <br />
+          <label class="input-filter">
+            <span>Sex of Participant</span>
+            <select id="sex">
+              <option selected />
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </label>
+          <br />
+          <label class="input-filter">
+            <span>Speaker Group</span>
+            <label>
+              <input type="checkbox" id="g1" />
+              G1
+            </label>
+            <label>
+              <input type="checkbox" id="g1_5" />
+              G1.5
+            </label>
+            <label>
+              <input type="checkbox" id="g2" />
+              G2
+            </label>
+            <label>
+              <input type="checkbox" id="g3" />
+              G3
+            </label>
+          </label>
+          <br />
+          <label class="input-filter">
+            <span>Dominant Language</span>
+            <select id="lang">
+              <option selected />
+              <option>English</option>
+              <option>Spanish</option>
+            </select>
+          </label>
+          <br />
+          <label class="input-filter">
+            <span>Participants Birth Year</span>
+            <input type="number" id="yob" />
+          </label>
+          <br />
+          <label class="input-filter">
+            <span>Participants Place of Birth</span>
+            <select id="pob">
+              <option selected />
+              {[...new Set(participants.map((i) => i.birth_country))]
+                .toSorted()
+                .map((i) => (
+                  <option>{i}</option>
+                ))}
+            </select>
+          </label>
+          <br />
+          <label class="input-filter">
+            <span>Education Level</span>
+            <select id="edu">
+              <option selected />
+              {[...new Set(participants.map((i) => i.adjusted_education))]
+                .toSorted()
+                .map((i) => (
+                  <option>{i}</option>
+                ))}
+            </select>
+          </label>
+          <br />
+          <label class="input-filter">
+            <span>Mother Place of Birth</span>
+            <select id="mom-birth">
+              <option selected />
+              {[...new Set(participants.map((i) => i.mother_birth_country))]
+                .toSorted()
+                .map((i) => (
+                  <option>{i}</option>
+                ))}
+            </select>
+          </label>
+          <br />
+          <label class="input-filter">
+            <span>Father Place of Birth</span>
+            <select id="dad-birth">
+              <option selected />
+              {[...new Set(participants.map((i) => i.father_birth_country))]
+                .toSorted()
+                .map((i) => (
+                  <option>{i}</option>
+                ))}
+            </select>
+          </label>
+          <br />
+          <input type="submit" value="Search" onClick="filter()" />
+          <hr />
+        </>
+      )
     }
-    </script>
-    <label class="input-filter">
-    <span>Participant Code</span><input type="text" id="code">
-    </label>
-    <br/>
-    <label class="input-filter">
-    <span>Sex of Participant</span>
-      <select id="sex">
-        <option selected></option>
-        <option>Male</option>
-        <option>Female</option>
-        <option>Other</option>
-      </select>
-    </label>
-    <br/>
-    <label class="input-filter">
-    <span>Speaker Group</span>
-    <label >
-      <input type="checkbox" id="g1"/>G1
-    </label>
-    <label >
-      <input type="checkbox" id="g1_5"/>G1.5
-    </label>
-    <label >
-      <input type="checkbox" id="g2"/>G2
-    </label>
-    <label >
-      <input type="checkbox" id="g3"/>G3
-    </label>
-    </label>
-    <br/>
-    <label class="input-filter">
-    <span>Dominant Language</span>
-      <select id="lang">
-        <option selected></option>
-        <option>English</option>
-        <option>Spanish</option>
-      </select>
-    </label>
-    <br/>
-    <label class="input-filter">
-      <span>Participants Birth Year</span>
-      <input type="number" id="yob"/>
-    </label>
-    <br/>
-    <label class="input-filter">
-      <span>Participants Place of Birth</span>
-      <select id="pob">
-        <option selected></option>
-        {[...new Set(participants.map(i => i.birth_country))]
-        .toSorted()
-        .map(i => <option>{i}</option>)
-        }
-      </select>
-    </label>
-    <br/>
-    <label class="input-filter">
-      <span>Education Level</span>
-      <select id="edu">
-        <option selected></option>
-        {[...new Set(participants.map(i => i.adjusted_education))]
-        .toSorted()
-        .map(i => <option>{i}</option>)
-        }
-      </select>
-    </label>
-    <br/>
-    <label class="input-filter">
-      <span>Mother Place of Birth</span>
-      <select id="mom-birth">
-        <option selected></option>
-        {[...new Set(participants.map(i => i.mother_birth_country))]
-        .toSorted()
-        .map(i => <option>{i}</option>)
-        }
-      </select>
-    </label>
-    <br/>
-    <label class="input-filter">
-      <span>Father Place of Birth</span>
-      <select id="dad-birth">
-        <option selected></option>
-        {[...new Set(participants.map(i => i.father_birth_country))]
-        .toSorted()
-        .map(i => <option>{i}</option>)
-        }
-      </select>
-    </label>
-    <br/>
-    <input type="submit" value="Search" onclick="filter()">
-    <hr/>
-  </>
-  }
   </div>
 
   <table class="center">
@@ -176,23 +201,23 @@ const participants = (await read({fields:["participant_code","sex","speaker_grou
       </tr>
     </thead>
     <tbody class="selectible">
-      {participants.map(i =>
-        (<tr>
-          <td>
-            <a href={`/corpus/${i.participant_code}`}>
-              {i.participant_code}
-            </a>
-          </td>
-          <td class="data_sex">{i.sex}</td>
-          <td class="data_speaker_group">{i.speaker_group}</td>
-          <td class="data_language_dominance">{i.language_dominance}</td>
-          <td class="data_year_of_birth">{i.year_of_birth}</td>
-          <td class="data_birth_country">{i.birth_country}</td>
-          <td class="data_adjusted_education">{i.adjusted_education}</td>
-          <td class="data_mother_birth_country">{i.mother_birth_country}</td>
-          <td class="data_father_birth_country">{i.father_birth_country}</td>
-        </tr>)
-      )}
+      {
+        participants.map((i) => (
+          <tr>
+            <td>
+              <a href={`/corpus/${i.participant_code}`}>{i.participant_code}</a>
+            </td>
+            <td class="data_sex">{i.sex}</td>
+            <td class="data_speaker_group">{i.speaker_group}</td>
+            <td class="data_language_dominance">{i.language_dominance}</td>
+            <td class="data_year_of_birth">{i.year_of_birth}</td>
+            <td class="data_birth_country">{i.birth_country}</td>
+            <td class="data_adjusted_education">{i.adjusted_education}</td>
+            <td class="data_mother_birth_country">{i.mother_birth_country}</td>
+            <td class="data_father_birth_country">{i.father_birth_country}</td>
+          </tr>
+        ))
+      }
     </tbody>
   </table>
 </Layout>

@@ -74,8 +74,8 @@ const role = session?.user?.role || "guest";
 
   <script>
     const { signIn, signOut } = await import("auth-astro/client");
-    document.querySelector("#login").onclick = () => signIn("keycloak");
-    document.querySelector("#logout").onclick = () => signOut();
+    document.querySelector("#login").onClick = () => signIn("keycloak");
+    document.querySelector("#logout").onClick = () => signOut();
   </script>
   <!-- <ul>  -->
   <!--   { -->

@@ -30,16 +30,16 @@ variables into `.env` file. `.env.example` provides a template on what
 variables must be set.
 
 - `BASE_URL`: the URL of this website to be placed at (only needed for
-production).
+  production).
 - `NOCODB_URL`: the URL of NocoDB database site.
 - `NOCODB_TOKEN`: generated token of NocoDB allowing access to the database,
-**must be secret**.
+  **must be secret**.
 - `NOCODB_TABLEID`: the table ID containing all participant's data.
 - `AUTH_KEYCLOAK_ISSUER`: Keycloak's realm full url.
 - `AUTH_SECRET`: randomly generated string, **must be secret**.
 - `AUTH_KEYCLOAK_ID`: OIDC's allocated client ID for this website.
 - `AUTH_KEYCLOAK_SECRET`: client secret of this OIDC's client, **must be
-secret**.
+  secret**.
 
 ## Development
 
@@ -121,15 +121,15 @@ filename/location](https://docs.astro.build/en/guides/routing/) is:
 - `/about/index.astro` -> `/about`
 - `/about/overview.astro` -> `/about/overview`
 - `/corpus/[code].astro` -> dynamically rendered depending on the given url.
-For example, if I enter `/corpus/UCSC_NS1_1`, JS code will use the value
-`UCSC_NS1_1` to determine what information to be shown.
+  For example, if I enter `/corpus/UCSC_NS1_1`, JS code will use the value
+  `UCSC_NS1_1` to determine what information to be shown.
 
 There are 3 types of files:
 
 - **Astro** (`.astro`): A mix of HTML and JavaScript. Usually contains
-Javascript code on top and HTML on the bottom. The JS code will be run on the
-server side, determining what to show on the client side. (Mostly determining
-client's permission).
+  Javascript code on top and HTML on the bottom. The JS code will be run on the
+  server side, determining what to show on the client side. (Mostly determining
+  client's permission).
 - **HTML** (`.html`): pretty straight forward. Use this if the snippet is
-static and will not change depending on the client's condition.
+  static and will not change depending on the client's condition.
 - **TypeScript/JavaScript** (`.ts`/`.js`): A logic code.
