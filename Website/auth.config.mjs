@@ -1,13 +1,24 @@
 import { defineConfig } from "auth-astro";
-import Keycloak from "@auth/core/providers/keycloak";
+
+const ISSUER = import.meta.env.AUTHENTIK_ISSUER;
 
 export default defineConfig({
   providers: [
-    Keycloak({
-      issuer: import.meta.env.AUTH_KEYCLOAK_ISSUER,
-      clientId: import.meta.env.AUTH_KEYCLOAK_ID,
-      clientSecret: import.meta.env.AUTH_KEYCLOAK_SECRET,
-    }),
+    {
+      id: "mu-h-si-c-portal",
+      name: "MuHSiC Portal",
+      type: "oidc",
+
+      issuer: import.meta.env.AUTHENTIK_ISSUER,
+
+      clientId: import.meta.env.AUTHENTIK_CLIENT_ID,
+      clientSecret: import.meta.env.AUTHENTIK_CLIENT_SECRET,
+
+      idToken: true,
+      checks: ["pkce", "state"],
+
+      authorization: { params: { scope: "openid email profile role" } },
+    },
   ],
   callbacks: {
     async jwt({ token, account, profile }) {
@@ -25,12 +36,16 @@ export default defineConfig({
   },
   events: {
     async signOut({ token }) {
-      if (token.provider === "keycloak") {
-        const logOutUrl = new URL(
-          `${import.meta.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/logout`,
-        );
-        logOutUrl.searchParams.set("id_token_hint", token.id_token);
-        await fetch(logOutUrl);
+      if (token.provider === "mu-h-si-c-portal") {
+        try {
+          const logOutUrl = new URL(
+            `${import.meta.env.AUTHENTIK_ISSUER}/if/logout/`,
+          );
+          logOutUrl.searchParams.set("id_token_hint", token.id_token);
+          await fetch(logOutUrl);
+        } catch (err) {
+          console.error("Logout failed:", err);
+        }
       }
     },
   },

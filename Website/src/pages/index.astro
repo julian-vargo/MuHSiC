@@ -1,41 +1,48 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import { Image } from "astro:assets";
-import orcid_logo from "@/components/logo/orcid.png";
-import www_logo from "@/components/logo/www.png";
-import SafeEmail from "@/components/SafeEmail.astro";
-
-import kim_profile from "./img/kim_profile.jpg";
-import mark_profile from "./img/mark_profile.jpg";
-import justin_profile from "./img/justin_profile.jpg";
+import { signIn } from "auth-astro/client";
 import login_button from "./img/login-button.png";
 
-const messages = [
-  "81 researchers",
-  "700 hours of speech",
-  "Three universities",
-  "100,000+ cells of metadata",
-  "14 million phonemes",
+// --------------- LOCAL UI STATE ----------------------
+
+/** Array of principal investigators. */
+const people = [
+  {
+    name: "Dr. Mark Amengual",
+    profile: "/img/mark_profile.jpg",
+    department: "Department of Languages and Applied Linguistics",
+    university: "University of California, Santa Cruz",
+    orcid: "0000-0003-2007-9687",
+    website: "https://markamengual.weebly.com/",
+    email: "amengual@ucsc.edu",
+  },
+  {
+    name: "Dr. Ji Young Kim",
+    profile: "/img/kim_profile.jpg",
+    department: "Department of Spanish and Portuguese",
+    university: "University of California, Los Angeles",
+    orcid: "0000-0002-5708-6461",
+    website: "https://spanport.ucla.edu/person/ji-young-kim/",
+    email: "jiyoungkim@ucla.edu",
+  },
+  {
+    name: "Dr. Justin Davidson",
+    profile: "/img/justin_profile.jpg",
+    department: "Department of Spanish and Portuguese",
+    university: "University of California, Berkeley",
+    orcid: "0000-0002-5708-6461",
+    website:
+      "https://spanish-portuguese.berkeley.edu/people/faculty/justin-davidson",
+    email: "justindavidson@berkeley.edu",
+  },
 ];
 ---
 
 <Layout>
-  <div
-    style="background-image: url('/img/baskin.jpg');background-size: cover; padding: 4rem;border-radius: 16px;"
-  >
+  <div class="banner">
     <div class="welcome-text">Multilingual Hispanic Speech in California</div>
-    <style>
-      .welcome-text {
-        text-align: center;
-        font-size: 36px;
-        color: white;
-        line-height: 1.25;
-        font-weight: bold;
-      }
-    </style>
   </div>
-
-  <p></p>
   <div class="grid-2">
     <div class="carousel-wrapper">
       <img
@@ -44,7 +51,7 @@ const messages = [
         class="carousel-bg"
       />
       <div class="carousel-text">
-        <p id="carousel-text">{messages[0]}</p>
+        <p id="carousel-text">81 researchers</p>
       </div>
     </div>
     <div>
@@ -63,38 +70,16 @@ const messages = [
       </p>
     </div>
   </div>
-
-  <script type="module" client:load>
-    const messages = [
-      "81 researchers",
-      "700 hours of speech",
-      "Three universities",
-      "100,000+ cells of metadata",
-      "14 million phonemes",
-    ];
-
-    const textEl = document.getElementById("carousel-text");
-    let i = 0;
-    setInterval(() => {
-      textEl.classList.remove("fade-in");
-      textEl.classList.add("fade-out");
-      setTimeout(() => {
-        i = (i + 1) % messages.length;
-        textEl.textContent = messages[i];
-        textEl.classList.remove("fade-out");
-        textEl.classList.add("fade-in");
-      }, 1000);
-    }, 5000);
-  </script>
-
   <div class="grid-2">
     <div>
       <p class="justify">
         The Multilingual Hispanic Speech in California Corpus has been made
-        possible in part by a <strong
-          >Multicampus Research Programs and Initiatives Grant (MRPI Grant
-          M23PL5866)</strong
-        > awarded to Mark Amengual, Ji Young Kim, and Justin Davidson.
+        possible in part by a
+        <strong
+          >Multicampus Research Programs and Initiatives Grant (MRPI
+          GrantM23PL5866)</strong
+        >
+        awarded to Mark Amengual, Ji Young Kim, and Justin Davidson.
       </p>
       <p class="justify">
         Any views, findings, conclusions, or recommendations expressed in this
@@ -102,52 +87,21 @@ const messages = [
         University of California.
       </p>
     </div>
-    <div style="display: flex; justify-content: center; align-items: center;">
-      <figure id="login" style="cursor: pointer;">
-        <Image
-          src={login_button}
-          alt="Login Button"
-          width={242}
-          height={193}
-          style="border-radius: 16px;"
-        />
-      </figure>
-    </div>
+    <button id="login" class="login-button">
+      <Image
+        src={login_button}
+        alt="Login Button"
+        width={242}
+        height={193}
+        style="border-radius:16px;"
+        id="login-img"
+      />
+    </button>
   </div>
-
   <h2>Principal Investigators</h2>
   <div class="grid-3" style="line-height:1.2rem;">
     {
-      [
-        {
-          name: "Dr. Mark Amengual",
-          profile: mark_profile,
-          department: "Department of Languages and Applied Linguistics",
-          university: "University of California, Santa Cruz",
-          orcid: "0000-0003-2007-9687",
-          website: "https://markamengual.weebly.com/",
-          email: "amengual@ucsc.edu",
-        },
-        {
-          name: "Dr. Ji Young Kim",
-          profile: kim_profile,
-          department: "Department of Spanish and Portuguese",
-          university: "University of California, Los Angeles",
-          orcid: "0000-0002-5708-6461",
-          website: "https://spanport.ucla.edu/person/ji-young-kim/",
-          email: "jiyoungkim@ucla.edu",
-        },
-        {
-          name: "Dr. Justin Davidson",
-          profile: justin_profile,
-          department: "Department of Spanish and Portuguese",
-          university: "University of California, Berkeley",
-          orcid: "0000-0002-5708-6461",
-          website:
-            "https://spanish-portuguese.berkeley.edu/people/faculty/justin-davidson",
-          email: "justindavidson@berkeley.edu",
-        },
-      ].map((person) => (
+      people.map((person) => (
         <div style="text-align: center;">
           <figure style="margin: 0;">
             <Image
@@ -166,64 +120,82 @@ const messages = [
                 rel="noopener"
               >
                 {person.name}
-                <Image
-                  src={orcid_logo}
-                  alt="ORCID logo"
-                  width={24}
-                  height={24}
-                  style="position: relative; bottom: -6px;"
-                />
-              </a>
-              <a href={person.website} target="_blank" rel="noopener">
-                <Image
-                  src={www_logo}
-                  alt="world wide web logo"
-                  width={24}
-                  height={24}
-                  style="position: relative; bottom: -6px;"
-                />
               </a>
             </p>
             <p>{person.department}</p>
             <p>{person.university}</p>
-            <p>
-              {" "}
-              <SafeEmail email={person.email} />{" "}
-            </p>
           </div>
         </div>
       ))
     }
   </div>
 
-  <!-- <h2>Contact Us</h2>
-  <ul>
-    <li>
-      Dr. Ji Young Kim (University of California, Los Angeles)
-      <SafeEmail email="jiyoungkim@ucla.edu" />
-    </li>
-    <li>
-      Dr. Justin Davidson (University of California, Berkeley),
-      <SafeEmail email="justindavidson@berkeley.edu" />
-    </li>
-    <li>
-      Dr. Mark Amengual (University of California, Santa Cruz)
-      <SafeEmail email="amengual@ucsc.edu" />
-    </li>
-  </ul> -->
+  <script type="module">
+    // --------------- LOCAL UI STATE ----------------------
 
-  <!-- <figure>
-    <Image
-      style="width: 100%; object-fit: cover;"
-      src={sc_pano}
-      alt="green open field and blue sky with cloud"
-      width={1920}
-      height={743}
-    />
-  </figure> -->
+    /** Messages to be displayed on the text carousel. */
+    const messages = [
+      "81 researchers",
+      "700 hours of speech",
+      "Three universities",
+      "100,000+ cells of metadata",
+      "14 million phonemes",
+    ];
 
-  <script>
-    const { signIn } = await import("auth-astro/client");
-    document.querySelector("#login").onclick = () => signIn("keycloak");
+    /** Text currently displayed by text carousel. */
+    const textEl = document.getElementById("carousel-text");
+
+    /** Message index. */
+    let i = 0;
+
+    // --------------- EVENT HANDLING ----------------------
+
+    /** On click for login button try to direct user to sign in, otherwise print error. */
+    document.querySelectorAll("#login").forEach((el) => {
+      el.addEventListener("click", () => {
+        try {
+          signIn("muhsic");
+        } catch (e) {
+          console.error(e);
+        }
+      });
+    });
+
+    /** Cycle through carousel messages every 5s, fading out the old message and fading in the next. */
+    setInterval(() => {
+      textEl.classList.remove("fade-in");
+      textEl.classList.add("fade-out");
+      setTimeout(() => {
+        i = (i + 1) % messages.length;
+        textEl.textContent = messages[i];
+        textEl.classList.remove("fade-out");
+        textEl.classList.add("fade-in");
+      }, 1000);
+    }, 5000);
   </script>
+
+  <!-- --------------- STYLING ---------------------- -->
+  <style>
+    .banner {
+      background-image: url("/img/baskin.jpg");
+      background-size: cover;
+      padding: 4rem;
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+
+    .welcome-text {
+      text-align: center;
+      font-size: 36px;
+      color: white;
+      line-height: 1.25;
+      font-weight: bold;
+    }
+
+    .login-button {
+      cursor: pointer;
+      border: none;
+      background-color: transparent;
+    }
+  </style>
 </Layout>

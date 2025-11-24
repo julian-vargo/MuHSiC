@@ -3,7 +3,8 @@ import Layout from "@/layouts/Layout.astro";
 import { getSession } from "auth-astro/server";
 
 const session = await getSession(Astro.request);
-const role = session?.user?.role || "guest";
+const user = session?.user as { role?: string; name?: string; email?: string };
+const role = user?.role || "guest";
 ---
 
 <Layout title="Profile">
@@ -74,8 +75,16 @@ const role = session?.user?.role || "guest";
 
   <script>
     const { signIn, signOut } = await import("auth-astro/client");
-    document.querySelector("#login").onClick = () => signIn("keycloak");
-    document.querySelector("#logout").onClick = () => signOut();
+    document.querySelectorAll("#login").forEach((el) => {
+      el.addEventListener("click", () => {
+        try {
+          signIn("muhsic");
+        } catch (e) {
+          console.error(e);
+        }
+      });
+    });
+    document.querySelector("#logout").onclick = () => signOut();
   </script>
   <!-- <ul>  -->
   <!--   { -->
