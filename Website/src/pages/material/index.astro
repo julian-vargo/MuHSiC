@@ -1,10 +1,11 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { Image } from "astro:assets";
 import { getSession } from "auth-astro/server";
+import type { Session } from "@auth/core/types";
 
-import pdf_icon from "../img/pdf-icon.png";
+// --------------- LOCAL UI STATE ----------------------
 
+/** PDF files available to all users. */
 const files = [
   {
     filename: "MuHSiC Interviewer Manual",
@@ -40,9 +41,16 @@ const files = [
   },
 ];
 
-const session = await getSession(Astro.request);
-const user = session?.user as { role?: string; name?: string; email?: string };
-const role = user?.role || "guest";
+// --------------- COMPUTED DATA -----------------------
+
+/** Current user's session, null if not authenticated. */
+const session: Session | null = await getSession(Astro.request);
+
+/** The current user's role, name, and email. */
+const user: { role?: string; name?: string; email?: string } | undefined = session?.user as { role?: string; name?: string; email?: string };
+
+/** The role of the current user. */
+const role: string = user?.role || "guest";
 ---
 
 <Layout title="Materials">
