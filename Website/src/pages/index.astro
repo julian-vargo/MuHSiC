@@ -2,7 +2,6 @@
 import Layout from "@/layouts/Layout.astro";
 import { Image } from "astro:assets";
 import { signIn } from "auth-astro/client";
-import login_button from "./img/login-button.png";
 
 // --------------- LOCAL UI STATE ----------------------
 
@@ -89,7 +88,7 @@ const people = [
     </div>
     <button id="login" class="login-button">
       <Image
-        src={login_button}
+        src=/img/login-button.png
         alt="Login Button"
         width={242}
         height={193}

@@ -1,9 +1,11 @@
 ---
 import Layout from "@/layouts/Layout.astro";
-import { Image } from "astro:assets";
+import { getSession } from "auth-astro/server";
+import type { Session } from "@auth/core/types";
 
-import pdf_icon from "../img/pdf-icon.png";
+// --------------- LOCAL UI STATE ----------------------
 
+/** PDF files available to all users. */
 const files = [
   {
     filename: "MuHSiC Interviewer Manual",
@@ -38,21 +40,48 @@ const files = [
     link: "/material/6b_BLP-ESPA%C3%91OL-INGL%C3%89S.pdf",
   },
 ];
+
+// --------------- COMPUTED DATA -----------------------
+
+/** Current user's session, null if not authenticated. */
+const session: Session | null = await getSession(Astro.request);
+
+/** The current user's role, name, and email. */
+const user: { role?: string; name?: string; email?: string } | undefined = session?.user as { role?: string; name?: string; email?: string };
+
+/** The role of the current user. */
+const role: string = user?.role || "guest";
 ---
 
-<Layout title="Materials">
+<Layout>
+  { role === "researcher" ? 
+    <h1>Download Links to Full Corpus</h1>
+    <ul>
+      <li>
+        <a href="/bulk_wav.zip">
+          wav files - full corpus audio
+        </a>
+      </li>
+      <li>
+        <a href="/bulk_pdf.zip">
+          pdf files - full corpus transcripts
+        </a>
+      </li>
+      <li>
+        <a href="/bulk_docx.zip">
+          docx files - full corpus transcripts
+        </a>
+      </li>
+    </ul>
+  : null }
+  <h1>
+    Interview Materials
+  </h1>
   <ul>
     {
       files.map((file) => (
         <li>
           <a href={file.link}>
-            <Image
-              src={pdf_icon}
-              alt="PDF Icon"
-              width={32}
-              height={32}
-              style="position:relative; bottom:-12px;"
-            />
             {file.filename}
           </a>
         </li>

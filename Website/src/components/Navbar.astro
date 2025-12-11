@@ -3,7 +3,6 @@ import { getSession } from "auth-astro/server";
 const session = await getSession(Astro.request);
 import { SignIn } from "auth-astro/components";
 import { Image } from "astro:assets";
-import banner from "./logo/banner.jpg";
 ---
 
 <style>
@@ -20,7 +19,7 @@ import banner from "./logo/banner.jpg";
 <nav>
   <a id="site-title" href="/" style="line-height: 0;">
     <Image
-      src={banner}
+      src="/img/banner.jpg"
       alt="MuHSiC logo"
       width={236}
       height={83.5}
@@ -43,7 +42,7 @@ import banner from "./logo/banner.jpg";
         </ul>
       </li>
       <li><a href="/corpus">Corpus</a></li>
-      <li><a href="/material">Materials</a></li>
+      <li><a href="/download">Download</a></li>
       <li><a href="/cite-the-corpus">Cite the Corpus</a></li>
       <li><a href="/links-to-other-corpora">Links to Other Corpora</a></li>
       <li>
@@ -71,7 +70,7 @@ import banner from "./logo/banner.jpg";
       </ul>
     </li>
     <li><a href="/corpus">Corpus</a></li>
-    <li><a href="/material">Materials</a></li>
+    <li><a href="/download">Download</a></li>
     <li><a href="/cite-the-corpus">Cite the Corpus</a></li>
     <li><a href="/links-to-other-corpora">Links to Other Corpora</a></li>
     <li>
@@ -79,7 +78,7 @@ import banner from "./logo/banner.jpg";
         session?.user ? (
           <a href="/profile">Profile</a>
         ) : (
-          <SignIn provider="keycloak">Log In</SignIn>
+          <SignIn provider="authentik">Log In</SignIn>
         )
       }
     </li>
