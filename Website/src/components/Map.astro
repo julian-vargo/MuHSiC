@@ -5,7 +5,7 @@ import { stringToGeo } from "@/lib/common";
 export const prerender = false;
 
 const participants = Astro.props.participants;
-const locations = await read({ table: "mcwkq8j4v11e35w" });
+const locations = await read({});
 const summarize = participants.map((participant) => {
   const city = participant["participant_location"];
   const places = locations.filter((i) => i.place === city);
