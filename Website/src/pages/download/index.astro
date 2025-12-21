@@ -47,48 +47,49 @@ const files = [
 const session: Session | null = await getSession(Astro.request);
 
 /** The current user's role, name, and email. */
-const user: { role?: string; name?: string; email?: string } | undefined = session?.user as { role?: string; name?: string; email?: string };
+const user: { role?: string; name?: string; email?: string } | undefined =
+  session?.user as { role?: string; name?: string; email?: string };
 
 /** The role of the current user. */
 const role: string = user?.role || "guest";
 ---
 
 <Layout>
-  { role === "researcher" ? 
-    <h1>Download Links to Full Corpus</h1>
-    <ul>
-      <li>
-        <a href="/download.php?file=wav">
-          wav files - full corpus audio (zip)
-        </a>
-      </li>
-      <li>
-        <a href="/download.php?file=pdf">
-          pdf files - full corpus transcripts (zip)
-        </a>
-      </li>
-      <li>
-        <a href="/download.php?file=docx">
-          docx files - full corpus transcripts (zip)
-        </a>
-      </li>
-      <li>
-        <a href="/download.php?file=parquet">
-          parquet acoustics spreadsheet of complete corpus
-        </a>
-      </li>
-    </ul>
-  : null }
-  <h1>
-    Interview Materials
-  </h1>
+  {
+    role === "researcher" ? (
+      <div>
+        <h1>Download Links to Full Corpus</h1>
+        <ul>
+          <li>
+            <a href="/api/download?file=wav">
+              WAV files - full corpus audio (zip)
+            </a>
+          </li>
+          <li>
+            <a href="/api/download?file=pdf">
+              PDF files - full corpus transcripts (zip)
+            </a>
+          </li>
+          <li>
+            <a href="/api/download?file=docx">
+              DOCX files - full corpus transcripts (zip)
+            </a>
+          </li>
+          <li>
+            <a href="/api/download?file=parquet">
+              Parquet acoustics spreadsheet of complete corpus
+            </a>
+          </li>
+        </ul>
+      </div>
+    ) : null
+  }
+  <h1>Interview Materials</h1>
   <ul>
     {
       files.map((file) => (
         <li>
-          <a href={file.link}>
-            {file.filename}
-          </a>
+          <a href={file.link}>{file.filename}</a>
         </li>
       ))
     }
