@@ -22,3 +22,10 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# random tools
+cwrsync.cmd
+cwrsync_6.4.2_x64_free/
+
+# node
+package-lock.json
