@@ -30,7 +30,7 @@ import { Image } from "astro:assets";
     <summary>Menu</summary>
     <ul>
       <li><a href="/">Home</a></li>
-      <li>
+      <!-- <li>
         <a href="/about">▾About</a>
         <ul>
           <li>
@@ -40,11 +40,13 @@ import { Image } from "astro:assets";
             <a href="/about/project-team">Project Team</a>
           </li>
         </ul>
-      </li>
-      <li><a href="/corpus">Corpus</a></li>
-      <li><a href="/download">Download</a></li>
-      <li><a href="/cite-the-corpus">Cite the Corpus</a></li>
-      <li><a href="/links-to-other-corpora">Links to Other Corpora</a></li>
+      </li> -->
+    <!-- <li><a href="/corpus">Corpus</a></li> -->
+    <li><a href="/download">Download</a></li>
+    <li><a href="/about/overview">Overview</a></li>
+    <li><a href="/about/project-team">Team</a></li>
+    <li><a href="/cite-the-corpus">Cite</a></li>
+    <li><a href="/links-to-other-corpora">Other Corpora</a></li>
       <li>
         {
           session?.user ? (
@@ -58,21 +60,23 @@ import { Image } from "astro:assets";
   </details>
   <ul>
     <li><a href="/">Home</a></li>
-    <li>
-      <a href="/about">▾About</a>
-      <ul>
-        <li>
-          <a href="/about/overview">Overview</a>
-        </li>
-        <li>
-          <a href="/about/project-team">Project Team</a>
-        </li>
-      </ul>
-    </li>
-    <li><a href="/corpus">Corpus</a></li>
+      <!-- <li>
+        <a href="/about">▾About</a>
+        <ul>
+          <li>
+            <a href="/about/overview">Overview</a>
+          </li>
+          <li>
+            <a href="/about/project-team">Project Team</a>
+          </li>
+        </ul>
+      </li> -->
+    <!-- <li><a href="/corpus">Corpus</a></li> -->
     <li><a href="/download">Download</a></li>
-    <li><a href="/cite-the-corpus">Cite the Corpus</a></li>
-    <li><a href="/links-to-other-corpora">Links to Other Corpora</a></li>
+    <li><a href="/about/overview">Overview</a></li>
+    <li><a href="/about/project-team">Team</a></li>
+    <li><a href="/cite-the-corpus">Cite</a></li>
+    <li><a href="/links-to-other-corpora">Other Corpora</a></li>
     <li>
       {
         session?.user ? (
