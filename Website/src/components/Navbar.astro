@@ -50,7 +50,7 @@ import { Image } from "astro:assets";
           session?.user ? (
             <a href="/profile">Profile</a>
           ) : (
-            <SignIn provider="keycloak">Log In</SignIn>
+            <SignIn provider="mu-h-si-c-portal">Log In</SignIn>
           )
         }
       </li>
@@ -78,7 +78,7 @@ import { Image } from "astro:assets";
         session?.user ? (
           <a href="/profile">Profile</a>
         ) : (
-          <SignIn provider="authentik">Log In</SignIn>
+          <SignIn provider="mu-h-si-c-portal">Log In</SignIn>
         )
       }
     </li>
