@@ -1,0 +1,20 @@
+---
+import LocationsMap from "../components/LocationsMap";
+
+const res = await fetch(new URL("/api/locations.json", Astro.url));
+if (!res.ok) {
+throw new Error(`Failed to load points: ${res.status}`);
+}
+const { points } = await res.json();
+---
+
+<html>
+<head>
+<meta charset="utf-8" />
+<title>MuHSiC Map</title>
+</head>
+<body>
+<h1>MuHSiC Locations</h1>
+<LocationsMap client:only="react" points={points} />
+</body>
+</html>

@@ -1,22 +1,89 @@
 ---
-import { read } from "@/lib/nocodb";
-import { stringToGeo } from "@/lib/common";
+import { read, nocodbHost } from "@/lib/nocodb";
 
 export const prerender = false;
 
-const participants = Astro.props.participants;
-const locations = await read({table: "m1m8bfzniv5lhm1",});
-const summarize = participants.map((participant) => {
-  const city = participant["participant_location"];
-  const places = locations.filter((i) => i.place === city);
-  const place =
-    places.length < 1 || places[0].problem ? { pos: "35;-124" } : places[0];
-  var title = `${city}:<br/><a href="corpus/${participant["participant_code"]}">${participant["participant_code"]}</a>`;
-  return {
-    title,
-    ...stringToGeo(place.pos),
-  };
-});
+const TABLE = "mmfxx41reqm0yc6";
+const FIELDS = ["Participant_Code", "latitude", "longitude"];
+
+// Server-side debug helpers (prints to server logs)
+const log = (...args: any[]) => console.log("[map debug]", ...args);
+const warn = (...args: any[]) => console.warn("[map debug]", ...args);
+const err = (...args: any[]) => console.error("[map debug]", ...args);
+
+log("Request URL:", Astro.request.url);
+log("nocodbHost:", nocodbHost);
+log("Target table:", TABLE);
+log("Requested fields:", FIELDS);
+
+let participants: any[] = [];
+let readError: any = null;
+
+try {
+  participants = await read({ table: TABLE, fields: FIELDS });
+  log("read() returned rows:", participants?.length ?? "null/undefined");
+
+  if (Array.isArray(participants) && participants.length > 0) {
+    // Show first row keys so you can see actual column names coming back
+    log("First row keys:", Object.keys(participants[0] ?? {}));
+    log("First row sample:", participants[0]);
+  } else {
+    warn("No rows returned from read().");
+  }
+} catch (e: any) {
+  readError = e;
+  err("read() threw:", e?.message ?? e, e);
+}
+
+// Build marker payload; track skips
+const skipped: any[] = [];
+const summarize = (Array.isArray(participants) ? participants : [])
+  .map((p, idx) => {
+    const codeRaw = p?.Participant_Code;
+    const latRaw = p?.latitude;
+    const lonRaw = p?.longitude;
+
+    const code = codeRaw != null ? String(codeRaw) : "";
+    const lat = Number(latRaw);
+    const lon = Number(lonRaw);
+
+    if (!code || !Number.isFinite(lat) || !Number.isFinite(lon)) {
+      skipped.push({
+        idx,
+        Participant_Code: codeRaw,
+        latitude: latRaw,
+        longitude: lonRaw,
+      });
+      return null;
+    }
+
+    return {
+      title: `<a href="corpus/${encodeURIComponent(code)}">${code}</a>`,
+      lat,
+      lon,
+    };
+  })
+  .filter(Boolean);
+
+log("summarize markers:", summarize.length);
+log("skipped rows:", skipped.length);
+if (skipped.length > 0) log("skipped sample:", skipped.slice(0, 5));
+
+const debugPayload = {
+  requestUrl: Astro.request.url,
+  nocodbHost,
+  table: TABLE,
+  fields: FIELDS,
+  readError: readError ? (readError?.message ?? String(readError)) : null,
+  rowsReturned: Array.isArray(participants) ? participants.length : null,
+  firstRowKeys:
+    Array.isArray(participants) && participants[0]
+      ? Object.keys(participants[0])
+      : null,
+  markersBuilt: summarize.length,
+  skippedCount: skipped.length,
+  skippedSample: skipped.slice(0, 10),
+};
 ---
 
 <link rel="stylesheet" href="/leaflet/leaflet.css" />
@@ -24,11 +91,36 @@ const summarize = participants.map((participant) => {
 <link rel="stylesheet" href="/leaflet/MarkerCluster.css" />
 <link rel="stylesheet" href="/leaflet/MarkerCluster.Default.css" />
 <script is:inline src="/leaflet/leaflet.markercluster.js"></script>
+
+<div style="max-width: 1100px; margin: 0 auto;">
+  <details open style="margin: 1rem 0; padding: 0.75rem; border: 1px solid #ccc; border-radius: 8px;">
+    <summary style="cursor: pointer; font-weight: 600;">Map debug panel</summary>
+    <pre style="white-space: pre-wrap; overflow:auto; max-height: 320px; margin-top: 0.75rem;" id="debug">
+{JSON.stringify(debugPayload, null, 2)}
+    </pre>
+    <p style="margin:0.5rem 0 0; font-size: 0.95rem;">
+      Check your server logs for lines starting with <code>[map debug]</code>.
+      If <code>readError</code> says “Not Found”, the table id is wrong or your NocoDB base URL is wrong.
+    </p>
+  </details>
+</div>
+
 <div id="map" style="height: 540px;"></div>
 <pre id="data" style="display:none">{JSON.stringify(summarize)}</pre>
+
 <script defer>
+  // Client-side debug
+  (function () {
+    const dbg = document.querySelector("#debug")?.innerText;
+    try {
+      console.log("[map debug] debugPayload:", JSON.parse(dbg));
+    } catch (e) {
+      console.log("[map debug] debugPayload raw:", dbg);
+    }
+  })();
+
   var map = L.map("map").setView([37.4, -119.5], 6);
-  // map.setMaxBounds(map.getBounds());
+
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     minZoom: 4,
     maxZoom: 14,
@@ -38,6 +130,9 @@ const summarize = participants.map((participant) => {
 
   var markers = L.markerClusterGroup();
   const data = JSON.parse(document.querySelector("#data").innerText);
+
+  console.log("[map debug] markers to render:", data.length);
+
   data.forEach((part) => {
     var marker = L.marker(new L.LatLng(part.lat, part.lon), {
       title: part.title,
@@ -45,5 +140,6 @@ const summarize = participants.map((participant) => {
     marker.bindPopup(part.title);
     markers.addLayer(marker);
   });
+
   map.addLayer(markers);
 </script>
