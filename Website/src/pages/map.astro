@@ -43,11 +43,6 @@ const { points } = await res.json();
     <main>
       <h1>MuHSiC Locations</h1>
 
-      <p class="justify">
-        Locations are plotted from the MuHSiC table using the <code>latitude</code> and{" "}
-        <code>longitude</code> columns.
-      </p>
-
       {/* Full-bleed map container aligned with your existing #map CSS rule */}
       <section id="map" aria-label="Map of MuHSiC locations">
         <LocationsMap client:only="react" points={points} />
