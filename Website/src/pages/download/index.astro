@@ -86,8 +86,10 @@ const role: string = user?.role || "guest";
         </li>
       ))
     }
+    {role === "researcher" && (
     <li>
-    <a href="/bigfiles/wav_redacted.zip">Download dataset</a>
+    <a href="/bigfiles/wav_redacted.zip">Download 16 kHz WAV - Full Corpus</a>
     </li>
+    )}
   </ul>
 </Layout>
