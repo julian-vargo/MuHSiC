@@ -3,9 +3,6 @@ import Layout from "@/layouts/Layout.astro";
 import { getSession } from "auth-astro/server";
 import type { Session } from "@auth/core/types";
 
-// --------------- LOCAL UI STATE ----------------------
-
-/** PDF files available to all users. */
 const files = [
   {
     filename: "MuHSiC Interviewer Manual",
@@ -39,23 +36,23 @@ const files = [
     filename: "BLP (Spanish-English)",
     link: "/material/6b_BLP-ESPA%C3%91OL-INGL%C3%89S.pdf",
   },
+    {
+    filename: "WAV files - 16 kHz",
+    link: "/wav_redacted.zip",
+  },
 ];
 
-// --------------- COMPUTED DATA -----------------------
 
-/** Current user's session, null if not authenticated. */
 const session: Session | null = await getSession(Astro.request);
 
-/** The current user's role, name, and email. */
 const user: { role?: string; name?: string; email?: string } | undefined =
   session?.user as { role?: string; name?: string; email?: string };
 
-/** The role of the current user. */
 const role: string = user?.role || "guest";
 ---
 
 <Layout>
-  {
+  <!-- {
     role === "researcher" ? (
       <div>
         <h1>Download Links to Full Corpus</h1>
@@ -83,8 +80,8 @@ const role: string = user?.role || "guest";
         </ul>
       </div>
     ) : null
-  }
-  <h1>Interview Materials</h1>
+  } -->
+  <h1>Download</h1>
   <ul>
     {
       files.map((file) => (

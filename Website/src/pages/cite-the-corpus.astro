@@ -1,21 +1,106 @@
 ---
 import Layout from "@/layouts/Layout.astro";
 import TOS from "@/components/TOS.html";
+
+const year = new Date().getFullYear();
+const citation = `Amengual, M., Kim, J.-Y., & Davidson, J. (${year}). Multilingual Hispanic Speech in California (MuHSiC). University of California, Santa Cruz. https://muhsic.ucsc.edu/`;
 ---
 
 <Layout title="Cite the Corpus">
-  <div style="background-color:#ffc500; padding: 2rem;">
-    <p>
-      When using the <b>MuHSiC corpus</b>, please cite using the following
-      format:
-    </p>
-    <p style="text-indent: -2rem; margin-left: 2rem;">
-      Amengual, M., Kim, J.-Y., &amp; Davidson, J. ({new Date().getFullYear()}).
-      Multilingual Hispanic Speech in California (MuHSiC). University of
-      California, Santa Cruz. [https://muhsic.acad.ucsc.edu/]
-    </p>
-  </div>
+  <section class="cite-card" aria-labelledby="cite-title">
+    <div class="cite-header">
+      <p id="cite-title" class="cite-lead">
+        When using the MuHSiC corpus, please cite:
+      </p>
+
+      <button id="copy-cite" class="copy-btn" type="button">
+        Copy citation
+      </button>
+    </div>
+
+    <p class="cite-text" id="citation-text">{citation}</p>
+    <p class="copy-status" id="copy-status" aria-live="polite"></p>
+  </section>
 
   <h2>Terms and Conditions</h2>
   <TOS />
+
+  <script type="module">
+    const btn = document.getElementById("copy-cite");
+    const citeEl = document.getElementById("citation-text");
+    const statusEl = document.getElementById("copy-status");
+
+    btn?.addEventListener("click", async () => {
+      const text = citeEl?.textContent?.trim() ?? "";
+      try {
+        await navigator.clipboard.writeText(text);
+        statusEl.textContent = "Copied.";
+        window.setTimeout(() => (statusEl.textContent = ""), 1500);
+      } catch (e) {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+
+        statusEl.textContent = "Copied.";
+        window.setTimeout(() => (statusEl.textContent = ""), 1500);
+      }
+    });
+  </script>
+
+  <style>
+    .cite-card {
+      padding: 1.25rem 1.25rem;
+      border: 1px solid rgba(0, 0, 0, 0.12);
+      border-radius: 16px;
+      background: #ffffff;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      margin: 1rem 0 2rem;
+    }
+
+    .cite-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+    }
+
+    .cite-lead {
+      margin: 0;
+    }
+
+    .cite-text {
+      margin: 0;
+      padding-left: 2rem;
+      text-indent: -2rem;
+      line-height: 1.4rem;
+      user-select: text;
+    }
+
+    .copy-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 0.6rem 0.9rem;
+      font-weight: 700;
+      background: #003c6c;
+      color: #ffffff;
+      cursor: pointer;
+    }
+
+    .copy-btn:active {
+      transform: translateY(1px);
+    }
+
+    .copy-status {
+      margin: 0.5rem 0 0;
+      font-size: 0.95rem;
+    }
+  </style>
 </Layout>

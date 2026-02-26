@@ -71,15 +71,16 @@ const people = [
       </p>
     </div>
   </div>
+
+{role !== "researcher" && (
   <div class="grid-2">
     <div>
       <p class="justify">
         The Multilingual Hispanic Speech in California Corpus has been made
         possible in part by a
-        <strong
-          >Multicampus Research Programs and Initiatives Grant (MRPI
-          GrantM23PL5866)</strong
-        >
+        <strong>
+          Multicampus Research Programs and Initiatives Grant (MRPI GrantM23PL5866)
+        </strong>
         awarded to Mark Amengual, Ji Young Kim, and Justin Davidson.
       </p>
       <p class="justify">
@@ -88,41 +89,40 @@ const people = [
         University of California.
       </p>
     </div>
-    {role !== "researcher" && (
-      <button id="login" class="login-button">
-        <Image
-          src="/img/login-button.png"
-          alt="Login Button"
-          width={242}
-          height={193}
-          style="border-radius:16px;"
-          id="login-img"
-        />
-      </button>
-    )}
-{role === "researcher" && (
-  <button id="logged-in" class="logged-in-button" type="button" disabled>
-    You are logged in. See download tab for the full corpus.
-  </button>
+
+    <button id="login" class="login-button" type="button">
+      <Image
+        src="/img/login-button.png"
+        alt="Login Button"
+        width={242}
+        height={193}
+        style="border-radius:16px;"
+        id="login-img"
+      />
+    </button>
+  </div>
 )}
 
-<style>
-  .logged-in-button {
-    border: none;
-    border-radius: 16px;
-    padding: 1rem 1.25rem;
-    font-size: 1.25rem;
-    font-weight: 700;
-    background: #003c6c;
-    color: #ffffff;
-  }
-  .logged-in-button:disabled {
-    cursor: default;
-    opacity: 1;
-  }
-</style>
-
+{role === "researcher" && (
+  <div class="grid-1">
+    <div>
+      <p class="justify">
+        The Multilingual Hispanic Speech in California Corpus has been made
+        possible in part by a
+        <strong>
+          Multicampus Research Programs and Initiatives Grant (MRPI GrantM23PL5866)
+        </strong>
+        awarded to Mark Amengual, Ji Young Kim, and Justin Davidson.
+      </p>
+      <p class="justify">
+        Any views, findings, conclusions, or recommendations expressed in this
+        website and project, do not necessarily represent those of the
+        University of California.
+      </p>
+    </div>
   </div>
+)}
+
   <h2>Principal Investigators</h2>
   <div class="grid-3" style="line-height:1.2rem;">
     {
@@ -159,11 +159,10 @@ const people = [
 
     /** Messages to be displayed on the text carousel. */
     const messages = [
-      "81 researchers",
       "700 hours of speech",
       "Three universities",
       "100,000+ cells of metadata",
-      "14 million phonemes",
+      "16 million phonemes",
     ];
 
     /** Text currently displayed by text carousel. */
