@@ -1,58 +1,61 @@
 ---
-import LocationsMap from "../components/LocationsMap";
+import Layout from "../layouts/Layout.astro";
+export const prerender = false;
 
+// Fetch points from your own server API (keeps NocoDB token off the client)
 const res = await fetch(new URL("/api/locations.json", Astro.url));
 if (!res.ok) {
   throw new Error(`Failed to load points: ${res.status}`);
 }
 const { points } = await res.json();
+
+// Turn points into the format the existing Leaflet script expects
+const data = (points ?? [])
+  .map((p) => ({
+    lat: Number(p.latitude),
+    lon: Number(p.longitude),
+    title: "",
+  }))
+  .filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lon));
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MuHSiC Map</title>
-    <link rel="stylesheet" href="/style.css" />
-  </head>
+<Layout title="Map">
+  <!-- Leaflet assets (use your existing local copies) -->
+  <link rel="stylesheet" href="/leaflet/leaflet.css" />
+  <script is:inline src="/leaflet/leaflet.js"></script>
+  <link rel="stylesheet" href="/leaflet/MarkerCluster.css" />
+  <link rel="stylesheet" href="/leaflet/MarkerCluster.Default.css" />
+  <script is:inline src="/leaflet/leaflet.markercluster.js"></script>
 
-  <body>
-    <header>
-      <nav>
-        <a href="/" aria-label="MuHSiC home">MuHSiC</a>
+  <div id="map" style="height: 540px;"></div>
+  <pre id="data" style="display:none">{JSON.stringify(data)}</pre>
 
-        <ul>
-          <li><a href="/about">About</a></li>
-          <li><a href="/download">Download</a></li>
-          <li><a href="/map">Map</a></li>
-        </ul>
+  <script defer>
+    var map = L.map("map").setView([37.4, -119.5], 6);
 
-        <details>
-          <summary>
-            <button type="button" aria-label="Open menu">Menu</button>
-          </summary>
-          <ul>
-            <li><a href="/about">About</a></li>
-            <li><a href="/download">Download</a></li>
-            <li><a href="/map">Map</a></li>
-          </ul>
-        </details>
-      </nav>
-    </header>
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      minZoom: 4,
+      maxZoom: 14,
+      attribution:
+        '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    }).addTo(map);
 
-    <main>
-      <h1>MuHSiC Locations</h1>
+    var markers = L.markerClusterGroup();
 
-      {/* Full-bleed map container aligned with your existing #map CSS rule */}
-      <section id="map" aria-label="Map of MuHSiC locations">
-        <LocationsMap client:only="react" points={points} />
-      </section>
-    </main>
+    const data = JSON.parse(document.querySelector("#data").innerText);
+    data.forEach((p) => {
+      var marker = L.marker(new L.LatLng(p.lat, p.lon));
+      markers.addLayer(marker);
+    });
 
-    <footer>
-      <div>
-        MuHSiC — Department of Spanish &amp; Portuguese, University of California, Berkeley
-      </div>
-    </footer>
-  </body>
-</html>
+    map.addLayer(markers);
+
+    // Optional: auto-fit bounds if you have at least one point
+    if (data.length > 0) {
+      var bounds = markers.getBounds();
+      if (bounds && bounds.isValid && bounds.isValid()) {
+        map.fitBounds(bounds, { padding: [20, 20] });
+      }
+    }
+  </script>
+</Layout>
