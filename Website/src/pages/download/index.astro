@@ -36,10 +36,6 @@ const files = [
     filename: "BLP (Spanish-English)",
     link: "/material/6b_BLP-ESPA%C3%91OL-INGL%C3%89S.pdf",
   },
-    {
-    filename: "WAV files - 16 kHz",
-    link: "/wav_redacted.zip",
-  },
 ];
 
 
@@ -90,5 +86,6 @@ const role: string = user?.role || "guest";
         </li>
       ))
     }
+    <a href="/download/wav_redacted.zip" download>Download dataset</a>
   </ul>
 </Layout>
