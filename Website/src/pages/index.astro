@@ -38,6 +38,18 @@ const people = [
     email: "justindavidson@berkeley.edu",
   },
 ];
+
+const julian = [
+  {
+    name: "Julian Vargo (Ph.D. Student)",
+    profile: "/img/vargo_spanport_library.jpg",
+    department: "Department of Spanish and Portuguese",
+    university: "University of California, Berkeley",
+    orcid: "0009-0009-8637-7928",
+    website: "https://sites.google.com/berkeley.edu/julian-vargo",
+    email: "julianvargo@berkeley.edu",
+  },
+];
 ---
 
 <Layout>
@@ -58,16 +70,14 @@ const people = [
     <div>
       <p class="justify">
         <b>The MuHSiC (Multilingual Hispanic Speech in California)</b> project is
-        a linguistically rich corpus of bilingual Spanish-English speech culled from
-        sociolinguistic interviews and naturalistic conversations from speakers of
-        diverse social profiles and regional origins throughout the state of California.
-        Speech data were collected by undergraduate students trained by graduate
+        a corpus of bilingual Spanish-English speech from
+        sociolinguistic interviews and naturalistic conversations across California.
+        Speech data of diverse social and regional profiles were collected by undergraduate students trained by graduate
         students and the 3 faculty PIs. Conversations consist of familiar to interviewers,
-        maximizing recording naturalness. Comprised of 600 70-minute recordings of
-        California Spanish-English bilinguals, half in Spanish and half in English,
-        this corpus provides an invaluable linguistic resource for language scholars
-        interested in examining the phonetics, phonology, morphology, syntax, and
-        lexicon of Spanish-English bilinguals in California.
+        maximizing recording naturalness. <br>
+        
+        This corpus features 1200 35-minute recordings of
+        California Spanish-English bilinguals, 600 recorded in Spanish and 600 in English.
       </p>
     </div>
   </div>
@@ -78,9 +88,7 @@ const people = [
       <p class="justify">
         The Multilingual Hispanic Speech in California Corpus has been made
         possible in part by a
-        <strong>
-          Multicampus Research Programs and Initiatives Grant (MRPI GrantM23PL5866)
-        </strong>
+        Multicampus Research Programs and Initiatives Grant (MRPI GrantM23PL5866)
         awarded to Mark Amengual, Ji Young Kim, and Justin Davidson.
       </p>
       <p class="justify">
@@ -123,27 +131,26 @@ const people = [
   </div>
 )}
 
-  <h2>Principal Investigators</h2>
-  <div class="grid-3" style="line-height:1.2rem;">
-    {
-      people.map((person) => (
-        <div style="text-align: center;">
-          <figure style="margin: 0;">
+<div class="grid-2" style="line-height:1.2rem; display:grid; grid-template-columns:2.5fr 1fr; gap:2rem; align-items:start;">
+  <section class="pi-block">
+    <h2 style="text-align:center;">Principal Investigators</h2>
+
+    <div class="grid-3">
+      {people.map((person) => (
+        <div style="text-align:center;">
+          <figure style="margin:0;">
             <Image
               src={person.profile}
               alt={`${person.name} portrait`}
               width={150}
               height={200}
-              style="border-radius: 16px;"
+              style="border-radius:16px;"
             />
           </figure>
+
           <div>
             <p>
-              <a
-                href={`https://orcid.org/${person.orcid}`}
-                target="_blank"
-                rel="noopener"
-              >
+              <a href={`https://orcid.org/${person.orcid}`} target="_blank" rel="noopener">
                 {person.name}
               </a>
             </p>
@@ -151,9 +158,42 @@ const people = [
             <p>{person.university}</p>
           </div>
         </div>
-      ))
-    }
-  </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="grid-1" style="line-height:1.2rem;">
+    <h2 style="text-align:center;">Project Manager</h2>
+
+    {julian.map((p) => (
+      <div style="text-align:center;">
+        <figure style="margin:0;">
+          <Image
+            src={p.profile}
+            alt={`${p.name} portrait`}
+            width={200}
+            height={200}
+            style="border-radius:16px;"
+          />
+        </figure>
+
+        <div>
+          <p>
+            <a href={`https://orcid.org/${p.orcid}`} target="_blank" rel="noopener">
+              {p.name}
+            </a>
+          </p>
+          <p>{p.department}</p>
+          <p>{p.university}</p>
+          <p>
+            For all inquiries regarding corpus processing, downloading, web development, or dataset access,
+            please contact julianvargo@berkeley.edu
+          </p>
+        </div>
+      </div>
+    ))}
+  </section>
+</div>
 
   <script type="module">
 
@@ -163,6 +203,8 @@ const people = [
       "Three universities",
       "100,000+ cells of metadata",
       "16 million phonemes",
+      "Fully transcribed audio",
+      "Force-aligned TextGrids"
     ];
 
     /** Text currently displayed by text carousel. */

@@ -159,8 +159,9 @@ h4,
 h5,
 h6 {
   padding: 1em;
-  background-color: var(--ucsc-gold);
+  background-color: var(--ucsc-blue);
   border-radius: 16px;
+  color: white;
 }
 
 h1 {
