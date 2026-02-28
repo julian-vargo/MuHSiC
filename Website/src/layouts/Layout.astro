@@ -26,10 +26,10 @@ const props = Astro.props;
     <header>
       <Navbar />
     </header>
-    <main>
-      {props.title && <h1>{props.title}</h1>}
-      <slot />
-    </main>
+      <main style="position: relative; overflow: visible;">
+        {props.title && <h1>{props.title}</h1>}
+        <slot />
+      </main>
     <footer>
       <div>
         <!-- <p>Made and maintained by <a href="https://napatsc.com">Napat Srichan</a></p> -->

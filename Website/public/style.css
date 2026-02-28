@@ -169,12 +169,14 @@ h1 {
 
 main {
   position: relative;
+  overflow: visible;
 }
 main,
 footer {
   margin: 1rem auto;
   padding: 0 1rem;
   max-width: var(--page-width);
+  position: relative;
 }
 
 footer {

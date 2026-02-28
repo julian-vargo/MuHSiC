@@ -1,224 +1,671 @@
 ---
-import { read } from "@/lib/nocodb";
-import Layout from "@/layouts/Layout.astro";
-import { canRead } from "@/lib/auth";
-import Map from "@/components/Map.astro";
-
-import { getSession } from "auth-astro/server";
 export const prerender = false;
 
-const session = await getSession(Astro.request);
-const participants = (
-  await read({
-    fields: [
-      "participant_code",
-      "sex",
-      "speaker_group",
-      "language_dominance",
-      "birth_country",
-      "year_of_birth",
-      "adjusted_education",
-      "mother_birth_country",
-      "father_birth_country",
-      "is_public_sample",
-      "publish",
-      "participant_location",
-    ],
-  })
-).filter((part) => (canRead(session) || part.is_public_sample) && part.publish);
-const filter = () => {
-  const code = document.querySelector("#code")?.value ?? "";
-  const sex = document.querySelector("#sex")?.value ?? "";
-  const g1 = document.querySelector("#g1")?.checked ?? false;
-  const g1_5 = document.querySelector("#g1_5")?.checked ?? false;
-  const g2 = document.querySelector("#g2")?.checked ?? false;
-  const g3 = document.querySelector("#g3")?.checked ?? false;
-  const lang = document.querySelector("#lang")?.value ?? "";
-  const yob = document.querySelector("#yob")?.value ?? "";
-  const pob = document.querySelector("#pob")?.value ?? "";
-  const edu = document.querySelector("#edu")?.value ?? "";
-  const mom_birth = document.querySelector("#mom-birth")?.value ?? "";
-  const dad_birth = document.querySelector("#dad-birth")?.value ?? "";
+import Layout from "@/layouts/Layout.astro";
+import {
+  getAllRows,
+  getColumnsFromMeta,
+  getTableIdFromEnv,
+  prettyLabel,
+} from "../../lib/nocodb_table";
 
-  Array.from(document.querySelectorAll(".selectible > tr")).forEach((i) => {
-    const i_code = i.querySelector("td")?.innerText ?? "";
-    const i_sex = i.querySelector(".data_sex")?.innerText ?? "";
-    const i_gen = i.querySelector(".data_speaker_group")?.innerText ?? "";
-    const i_lang = i.querySelector(".data_language_dominance")?.innerText ?? "";
-    const i_yob = i.querySelector(".data_year_of_birth")?.innerText ?? "";
-    const i_pob = i.querySelector(".data_birth_country")?.innerText ?? "";
-    const i_edu = i.querySelector(".data_adjusted_education")?.innerText ?? "";
-    const i_mom_birth =
-      i.querySelector(".data_mother_birth_country")?.innerText ?? "";
-    const i_dad_birth =
-      i.querySelector(".data_father_birth_country")?.innerText ?? "";
+const HIDE_COLS = new Set<string>([
+  "id",
+  "created_at",
+  "updated_at",
+  "nc_created_by",
+  "nc_updated_by",
+  "nc_order",
+  "created_by",
+  "updated_by",
+]);
 
-    const included =
-      i_code.includes(code) &&
-      (sex === "" || i_sex === sex) &&
-      (lang === "" || i_lang === lang) &&
-      ((!g1 && !g1_5 && !g2 && !g3) ||
-        (g1 && i_gen === "G1") ||
-        (g1_5 && i_gen === "G1.5") ||
-        (g2 && i_gen === "G2") ||
-        (g3 && i_gen === "G3")) &&
-      (yob === "" || i_yob === yob) &&
-      (pob === "" || i_pob === pob) &&
-      (edu === "" || i_edu === edu) &&
-      (mom_birth === "" || i_mom_birth === mom_birth) &&
-      (dad_birth === "" || i_dad_birth === dad_birth);
+let error: string | null = null;
+let columns: Array<{ key: string; label: string }> = [];
+let rows: any[] = [];
+let tableName = "";
+let tableId = "";
 
-    i.style.display = included ? "" : "none";
-  });
-};
+try {
+  tableId = getTableIdFromEnv();
+
+  const colRes = await getColumnsFromMeta(tableId);
+  tableName = String(colRes.meta?.table_name ?? colRes.meta?.title ?? tableId);
+
+  rows = await getAllRows(tableId, 200);
+
+  columns = (colRes.columns || []).map((c: any) => ({
+    key: String(c.key),
+    label: String(c.label || prettyLabel(c.key)),
+  }));
+
+  if (!columns.length && rows.length) {
+    columns = Object.keys(rows[0]).map((k) => ({
+      key: String(k),
+      label: prettyLabel(String(k)),
+    }));
+  }
+
+  columns = columns.filter((c) => !HIDE_COLS.has(c.key));
+} catch (e: any) {
+  error = e?.message ?? String(e);
+}
+
+const payload = JSON.stringify({ columns, rows, tableName, tableId }).replaceAll(
+  "</script>",
+  "<\\/script>"
+);
 ---
+<Layout title="Database Search">
+  {error ? (
+    <p style="color:#b00020;">Error: {error}</p>
+  ) : (
+    <>
+      <style>
+        /* Local page styles (plain CSS — no template literals) */
+        #controlsRow {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.75rem;
+          align-items: end;
+          margin: 0 0 1rem 0;
+        }
 
-<Layout width="full">
-  <Map participants={participants} />
-  <div class="width-med">
-    <h1>Sample data</h1>
-    {
-      canRead(session) && (
-        <>
-          <label class="input-filter">
-            <>
-              <span>Participant Code</span>
-              <input type="text" id="code" />
-            </>
-          </label>
-          <br />
-          <label class="input-filter">
-            <span>Sex of Participant</span>
-            <select id="sex">
-              <option selected />
-              <option>Male</option>
-              <option>Female</option>
-              <option>Other</option>
-            </select>
-          </label>
-          <br />
-          <label class="input-filter">
-            <span>Speaker Group</span>
-            <label>
-              <input type="checkbox" id="g1" />
-              G1
-            </label>
-            <label>
-              <input type="checkbox" id="g1_5" />
-              G1.5
-            </label>
-            <label>
-              <input type="checkbox" id="g2" />
-              G2
-            </label>
-            <label>
-              <input type="checkbox" id="g3" />
-              G3
-            </label>
-          </label>
-          <br />
-          <label class="input-filter">
-            <span>Dominant Language</span>
-            <select id="lang">
-              <option selected />
-              <option>English</option>
-              <option>Spanish</option>
-            </select>
-          </label>
-          <br />
-          <label class="input-filter">
-            <span>Participants Birth Year</span>
-            <input type="number" id="yob" />
-          </label>
-          <br />
-          <label class="input-filter">
-            <span>Participants Place of Birth</span>
-            <select id="pob">
-              <option selected />
-              {[...new Set(participants.map((i) => i.birth_country))]
-                .toSorted()
-                .map((i) => (
-                  <option>{i}</option>
-                ))}
-            </select>
-          </label>
-          <br />
-          <label class="input-filter">
-            <span>Education Level</span>
-            <select id="edu">
-              <option selected />
-              {[...new Set(participants.map((i) => i.adjusted_education))]
-                .toSorted()
-                .map((i) => (
-                  <option>{i}</option>
-                ))}
-            </select>
-          </label>
-          <br />
-          <label class="input-filter">
-            <span>Mother Place of Birth</span>
-            <select id="mom-birth">
-              <option selected />
-              {[...new Set(participants.map((i) => i.mother_birth_country))]
-                .toSorted()
-                .map((i) => (
-                  <option>{i}</option>
-                ))}
-            </select>
-          </label>
-          <br />
-          <label class="input-filter">
-            <span>Father Place of Birth</span>
-            <select id="dad-birth">
-              <option selected />
-              {[...new Set(participants.map((i) => i.father_birth_country))]
-                .toSorted()
-                .map((i) => (
-                  <option>{i}</option>
-                ))}
-            </select>
-          </label>
-          <br />
-          <input type="submit" value="Search" onClick="filter()" />
-          <hr />
-        </>
-      )
-    }
-  </div>
+        #tableWrap {
+          border: 1px solid #eee;
+          border-radius: 8px;
+          overflow: auto;
+        }
 
-  <table class="center">
-    <thead>
-      <tr>
-        <th>Participant Code</th>
-        <th>Sex of Participant</th>
-        <th>Speaker Group</th>
-        <th>Dominant Language</th>
-        <th>Participants Birth Year</th>
-        <th>Participants Place of Birth</th>
-        <th>Participants Education Level</th>
-        <th>Mother Place of Birth</th>
-        <th>Father Place of Birth</th>
-      </tr>
-    </thead>
-    <tbody class="selectible">
-      {
-        participants.map((i) => (
-          <tr>
-            <td>
-              <a href={`/corpus/${i.participant_code}`}>{i.participant_code}</a>
-            </td>
-            <td class="data_sex">{i.sex}</td>
-            <td class="data_speaker_group">{i.speaker_group}</td>
-            <td class="data_language_dominance">{i.language_dominance}</td>
-            <td class="data_year_of_birth">{i.year_of_birth}</td>
-            <td class="data_birth_country">{i.birth_country}</td>
-            <td class="data_adjusted_education">{i.adjusted_education}</td>
-            <td class="data_mother_birth_country">{i.mother_birth_country}</td>
-            <td class="data_father_birth_country">{i.father_birth_country}</td>
-          </tr>
-        ))
-      }
-    </tbody>
-  </table>
+        .picker {
+          min-width: 260px;
+        }
+
+        .picker-btn {
+          width: 100%;
+          padding: 0.4rem;
+          border: 1px solid #ccc;
+          border-radius: 6px;
+          background: white;
+          text-align: left;
+          cursor: pointer;
+        }
+
+        .picker-btn:focus {
+          outline: 2px solid rgba(33, 104, 144, 0.35);
+          outline-offset: 2px;
+        }
+
+        #filtersWrap {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 0.5rem 1rem;
+          margin: 0 0 1rem 0;
+        }
+
+        @media (max-width: 760px) {
+          #filtersWrap {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        .filterRow {
+          display: grid;
+          grid-template-columns: 200px 1fr;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .filterLabel {
+          font-weight: 600;
+          min-width: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .filterInput {
+          padding: 0.4rem;
+          width: 100%;
+          min-width: 0;
+        }
+
+        /* ===== Full-screen modal overlay for Select Columns ===== */
+        #colMenu {
+          position: fixed;
+          inset: 0;
+          z-index: 2147483647;
+          display: none;
+          align-items: center;
+          justify-content: center;
+          padding: 16px;
+          background: rgba(0, 0, 0, 0.55);
+        }
+
+        #colMenu[data-open="true"] {
+          display: flex !important;
+        }
+
+        #colMenuPanel {
+          width: 760px;
+          max-width: min(760px, calc(100vw - 32px));
+          max-height: min(640px, calc(100vh - 32px));
+          overflow: hidden;
+          background: #003c6c;
+          color: white;
+          border-radius: 16px;
+          box-shadow: 0 18px 60px rgba(0, 0, 0, 0.5);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          display: flex;
+          flex-direction: column;
+        }
+
+        #colMenuHeader {
+          padding: 12px 14px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+        }
+
+        .colClose {
+          appearance: none;
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+          border-radius: 10px;
+          padding: 0.35rem 0.55rem;
+          cursor: pointer;
+          line-height: 1;
+        }
+
+        .colClose:hover {
+          background: rgba(255, 255, 255, 0.16);
+        }
+
+        #colMenuSearch {
+          width: 100%;
+          box-sizing: border-box;
+          padding: 0.55rem 0.65rem;
+          border: 0;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+        }
+
+        #colMenuSearch::placeholder {
+          color: rgba(255, 255, 255, 0.75);
+        }
+
+        #colMenuInner {
+          flex: 1;
+          overflow: auto;
+        }
+
+        #colMenuItems {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 6px 10px;
+          padding: 10px;
+        }
+
+        @media (max-width: 640px) {
+          #colMenuItems {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        .menu-item {
+          padding: 0.45rem 0.6rem;
+          cursor: pointer;
+          user-select: none;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          min-width: 0;
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-item:hover {
+          background: rgba(255, 255, 255, 0.14);
+        }
+
+        .menu-item[aria-selected="true"] {
+          background: rgba(255, 255, 255, 0.18);
+          border-color: rgba(255, 255, 255, 0.22);
+        }
+
+        .menu-item span {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        /* “radio-like” look (still multi-select) */
+        .radioLike {
+          appearance: none;
+          width: 14px;
+          height: 14px;
+          border: 2px solid rgba(255, 255, 255, 0.85);
+          border-radius: 999px;
+          display: inline-block;
+          position: relative;
+          margin: 0;
+          flex: 0 0 auto;
+          pointer-events: none;
+        }
+
+        .radioLike:checked::after {
+          content: "";
+          position: absolute;
+          inset: 3px;
+          border-radius: 999px;
+          background: #ffc500;
+        }
+
+        #colMenuActions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 0.5rem;
+          padding: 10px;
+          border-top: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        #colMenuActions button {
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          background: rgba(255, 255, 255, 0.1);
+          color: white;
+          border-radius: 10px;
+          padding: 0.45rem 0.75rem;
+          cursor: pointer;
+        }
+
+        #colMenuActions button:hover {
+          background: rgba(255, 255, 255, 0.16);
+        }
+      </style>
+
+      <div id="controlsRow">
+        <label style="display:flex; flex-direction:column; gap:0.25rem;">
+          <span style="font-weight:600;">Select Columns</span>
+          <div class="picker">
+            <button id="colBtn" class="picker-btn" type="button" aria-haspopup="dialog" aria-expanded="false">
+              Choose columns…
+            </button>
+          </div>
+        </label>
+
+        <label style="display:flex; align-items:center; gap:0.4rem; padding-bottom:0.35rem;">
+          <input id="exactChk" type="checkbox" />
+          <span>Exact match</span>
+        </label>
+
+        <label style="display:flex; align-items:center; gap:0.4rem; padding-bottom:0.35rem;">
+          <input id="caseChk" type="checkbox" />
+          <span>Case sensitive</span>
+        </label>
+
+        <button id="clearBtn" type="button" style="padding:0.45rem 0.7rem;">Clear</button>
+
+        <div style="margin-left:auto; display:flex; gap:0.75rem; align-items:center;">
+          <span>Results:</span>
+          <code id="countCode">0</code>
+        </div>
+      </div>
+
+      <div id="filtersWrap"></div>
+
+      <!-- Full-screen modal overlay -->
+      <div id="colMenu" role="dialog" aria-modal="true" aria-label="Select columns" data-open="false">
+        <div id="colMenuPanel" tabindex="-1">
+          <div id="colMenuHeader">
+            <span>Select columns</span>
+            <button id="colCloseX" class="colClose" type="button" aria-label="Close">✕</button>
+          </div>
+
+          <input id="colMenuSearch" type="text" placeholder="Filter columns…" />
+
+          <div id="colMenuInner">
+            <div id="colMenuItems"></div>
+          </div>
+
+          <div id="colMenuActions">
+            <button id="colCancel" type="button">Cancel</button>
+            <button id="colApply" type="button">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="tableWrap">
+        <table id="resultsTable" style="width:100%; border-collapse:collapse; min-width:900px;">
+          <thead id="thead"></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <script type="application/json" id="nocodbPayload" set:html={payload}></script>
+
+      <script>
+        (function () {
+          const payloadEl = document.getElementById("nocodbPayload");
+          if (!payloadEl) return;
+
+          let parsed = {};
+          try {
+            parsed = JSON.parse(payloadEl.textContent || "{}");
+          } catch (e) {
+            console.error("[dbsearch] JSON parse failed", e);
+            return;
+          }
+
+          const columns = Array.isArray(parsed.columns) ? parsed.columns : [];
+          const rows = Array.isArray(parsed.rows) ? parsed.rows : [];
+
+          const exactChk = document.getElementById("exactChk");
+          const caseChk = document.getElementById("caseChk");
+          const clearBtn = document.getElementById("clearBtn");
+          const countCode = document.getElementById("countCode");
+          const thead = document.getElementById("thead");
+          const tbody = document.getElementById("tbody");
+          const filtersWrap = document.getElementById("filtersWrap");
+
+          const colBtn = document.getElementById("colBtn");
+          const colMenu = document.getElementById("colMenu");
+          const colMenuPanel = document.getElementById("colMenuPanel");
+          const colMenuSearch = document.getElementById("colMenuSearch");
+          const colMenuItems = document.getElementById("colMenuItems");
+          const colApply = document.getElementById("colApply");
+          const colCancel = document.getElementById("colCancel");
+          const colCloseX = document.getElementById("colCloseX");
+
+          if (!exactChk || !caseChk || !clearBtn || !countCode || !thead || !tbody || !filtersWrap) return;
+          if (!colBtn || !colMenu || !colMenuPanel || !colMenuSearch || !colMenuItems || !colApply || !colCancel || !colCloseX) return;
+
+          const labelByKey = new Map(columns.map((c) => [String(c.key), String(c.label || c.key)]));
+
+          const defaultKeys = columns.slice(0, 6).map((c) => String(c.key)).filter(Boolean);
+          let appliedKeys = defaultKeys.length ? defaultKeys : (columns[0] ? [String(columns[0].key)] : []);
+          let pendingKeys = [...appliedKeys];
+
+          let filterValues = Object.create(null);
+          for (const k of appliedKeys) filterValues[k] = "";
+
+          function escapeHtml(s) {
+            return String(s)
+              .replaceAll("&", "&amp;")
+              .replaceAll("<", "&lt;")
+              .replaceAll(">", "&gt;")
+              .replaceAll('"', "&quot;")
+              .replaceAll("'", "&#039;");
+          }
+
+          function visibleColumns() {
+            const keys = appliedKeys.length ? appliedKeys : columns.map((c) => String(c.key));
+            const byKey = new Map(columns.map((c) => [String(c.key), c]));
+            return keys.map((k) => byKey.get(k)).filter(Boolean);
+          }
+
+          function buildHeader() {
+            const vis = visibleColumns();
+            thead.innerHTML =
+              "<tr>" +
+              vis
+                .map(
+                  (c) =>
+                    '<th style="text-align:left; padding:0.5rem; border-bottom:1px solid #ccc; white-space:nowrap;">' +
+                    escapeHtml(String(c.label || c.key)) +
+                    "</th>"
+                )
+                .join("") +
+              "</tr>";
+          }
+
+          function normalize(v) {
+            if (v === null || v === undefined) return "";
+            if (typeof v === "object") return JSON.stringify(v);
+            return String(v);
+          }
+
+          function matches(cellValue, query, exact, caseSensitive) {
+            const raw = normalize(cellValue);
+            if (!caseSensitive) {
+              const a = raw.toLowerCase();
+              const b = query.toLowerCase();
+              return exact ? a === b : a.includes(b);
+            }
+            return exact ? raw === query : raw.includes(query);
+          }
+
+          function filterRows() {
+            const exact = !!exactChk.checked;
+            const caseSensitive = !!caseChk.checked;
+            const keys = appliedKeys.length ? appliedKeys : columns.map((c) => String(c.key));
+
+            return rows.filter((r) => {
+              for (const k of keys) {
+                const q = (filterValues?.[k] ?? "").trim();
+                if (!q) continue;
+                if (!matches(r?.[k], q, exact, caseSensitive)) return false;
+              }
+              return true;
+            });
+          }
+
+          function renderFilters() {
+            const keys = appliedKeys.length ? appliedKeys : columns.map((c) => String(c.key));
+            filtersWrap.innerHTML = keys
+              .map((k) => {
+                const label = labelByKey.get(k) || k;
+                const value = filterValues?.[k] ?? "";
+                return (
+                  '<div class="filterRow">' +
+                  '<div class="filterLabel" title="' +
+                  escapeHtml(label) +
+                  '">' +
+                  escapeHtml(label) +
+                  "</div>" +
+                  '<input class="filterInput" data-key="' +
+                  escapeHtml(k) +
+                  '" type="text" placeholder="filter ' +
+                  escapeHtml(label) +
+                  '…" value="' +
+                  escapeHtml(value) +
+                  '" />' +
+                  "</div>"
+                );
+              })
+              .join("");
+          }
+
+          function renderTable(filtered) {
+            const vis = visibleColumns();
+            countCode.textContent = String(filtered.length);
+
+            if (!vis.length) {
+              thead.innerHTML = "";
+              tbody.innerHTML = '<tr><td style="padding:0.75rem;">(No visible columns.)</td></tr>';
+              return;
+            }
+
+            if (!filtered.length) {
+              tbody.innerHTML =
+                '<tr><td style="padding:0.75rem;" colspan="' + String(vis.length) + '">(No matches.)</td></tr>';
+              return;
+            }
+
+            tbody.innerHTML = filtered
+              .map((r) => {
+                const tds = vis
+                  .map((c) => {
+                    const v = r?.[c.key];
+                    let html = "";
+                    if (v === null || v === undefined || v === "") {
+                      html = '<span style="opacity:0.6;">(empty)</span>';
+                    } else if (typeof v === "object") {
+                      html = '<code style="white-space:pre-wrap;">' + escapeHtml(JSON.stringify(v)) + "</code>";
+                    } else {
+                      html = '<code style="white-space:pre-wrap;">' + escapeHtml(String(v)) + "</code>";
+                    }
+                    return '<td style="padding:0.5rem; border-bottom:1px solid #eee; vertical-align:top;">' + html + "</td>";
+                  })
+                  .join("");
+                return "<tr>" + tds + "</tr>";
+              })
+              .join("");
+          }
+
+          function syncButtonLabel() {
+            if (!columns.length) {
+              colBtn.textContent = "No columns";
+              return;
+            }
+            if (!appliedKeys.length) {
+              colBtn.textContent = "All columns";
+              return;
+            }
+            const n = appliedKeys.length;
+            const labels = appliedKeys
+              .map((k) => labelByKey.get(k) || k)
+              .filter(Boolean)
+              .slice(0, 3);
+            colBtn.textContent = n <= 3 ? labels.join(", ") : labels.join(", ") + " + " + String(n - 3) + " more";
+          }
+
+          function refresh() {
+            buildHeader();
+            renderFilters();
+            renderTable(filterRows());
+            syncButtonLabel();
+          }
+
+          function renderMenuItems(filterText) {
+            const ft = (filterText || "").toLowerCase().trim();
+            const items = columns
+              .map((c) => ({ key: String(c.key), label: String(c.label || c.key) }))
+              .filter((c) => !ft || c.label.toLowerCase().includes(ft));
+
+            colMenuItems.innerHTML =
+              items
+                .map((c) => {
+                  const checked = pendingKeys.includes(c.key);
+                  return (
+                    '<div class="menu-item" role="option" data-key="' +
+                    escapeHtml(c.key) +
+                    '" aria-selected="' +
+                    (checked ? "true" : "false") +
+                    '">' +
+                    '<input class="radioLike" type="checkbox" ' +
+                    (checked ? "checked" : "") +
+                    " />" +
+                    "<span>" +
+                    escapeHtml(c.label) +
+                    "</span>" +
+                    "</div>"
+                  );
+                })
+                .join("") || '<div class="menu-item" style="opacity:0.7;">(no matches)</div>';
+          }
+
+          function openMenu() {
+            pendingKeys = [...appliedKeys];
+            colMenu.dataset.open = "true";
+            colBtn.setAttribute("aria-expanded", "true");
+            renderMenuItems(colMenuSearch.value || "");
+            colMenuSearch.focus();
+          }
+
+          function closeMenu() {
+            colMenu.dataset.open = "false";
+            colBtn.setAttribute("aria-expanded", "false");
+            pendingKeys = [...appliedKeys];
+            colBtn.focus();
+          }
+
+          function applyPending() {
+            appliedKeys = [...pendingKeys];
+            const next = Object.create(null);
+            for (const k of appliedKeys) next[k] = filterValues && k in filterValues ? filterValues[k] : "";
+            filterValues = next;
+            refresh();
+          }
+
+          colBtn.addEventListener("click", function () {
+            const open = colMenu.dataset.open === "true";
+            if (open) closeMenu();
+            else openMenu();
+          });
+
+          colApply.addEventListener("click", function () {
+            applyPending();
+            closeMenu();
+          });
+
+          colCancel.addEventListener("click", closeMenu);
+          colCloseX.addEventListener("click", closeMenu);
+
+          // Backdrop click closes (only when clicking outside the panel)
+          colMenu.addEventListener("pointerdown", function (e) {
+            if (e.target === colMenu) closeMenu();
+          });
+
+          document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && colMenu.dataset.open === "true") closeMenu();
+          });
+
+          colMenuSearch.addEventListener("input", function () {
+            renderMenuItems(colMenuSearch.value || "");
+          });
+
+          colMenuItems.addEventListener("click", function (e) {
+            const el = e.target.closest(".menu-item");
+            if (!el) return;
+            const key = el.getAttribute("data-key");
+            if (!key) return;
+            const idx = pendingKeys.indexOf(key);
+            if (idx >= 0) pendingKeys.splice(idx, 1);
+            else pendingKeys.push(key);
+            renderMenuItems(colMenuSearch.value || "");
+          });
+
+          filtersWrap.addEventListener("input", function (e) {
+            const el = e.target;
+            if (!el || el.tagName !== "INPUT") return;
+            const k = el.getAttribute("data-key");
+            if (!k) return;
+            filterValues[k] = el.value || "";
+            renderTable(filterRows());
+          });
+
+          exactChk.addEventListener("change", function () {
+            renderTable(filterRows());
+          });
+
+          caseChk.addEventListener("change", function () {
+            renderTable(filterRows());
+          });
+
+          clearBtn.addEventListener("click", function () {
+            exactChk.checked = false;
+            caseChk.checked = false;
+
+            appliedKeys = defaultKeys.length ? [...defaultKeys] : columns[0] ? [String(columns[0].key)] : [];
+            pendingKeys = [...appliedKeys];
+
+            filterValues = Object.create(null);
+            for (const k of appliedKeys) filterValues[k] = "";
+
+            colMenuSearch.value = "";
+            closeMenu();
+            refresh();
+          });
+
+          refresh();
+        })();
+      </script>
+    </>
+  )}
 </Layout>
-<!-- const participants = (await read({fields:["participant_code","sex","speaker_group","language_dominance","birth_country","year_of_birth","adjusted_education","mother_birth_country","father_birth_country","is_public_sample","publish"]})) -->
