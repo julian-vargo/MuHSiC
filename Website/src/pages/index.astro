@@ -5,9 +5,6 @@ import { getSession } from "auth-astro/server";
 
 const session = await getSession(Astro.request);
 const role = (session?.user as any)?.role ?? "guest";
-// --------------- LOCAL UI STATE ----------------------
-
-/** Array of principal investigators. */
 const people = [
   {
     name: "Dr. Mark Amengual",
@@ -196,7 +193,6 @@ const julian = [
 
   <script type="module">
 
-    /** Messages to be displayed on the text carousel. */
     const messages = [
       "700 hours of speech",
       "Three universities",
@@ -206,13 +202,10 @@ const julian = [
       "Force-aligned TextGrids"
     ];
 
-    /** Text currently displayed by text carousel. */
     const textEl = document.getElementById("carousel-text");
 
-    /** Message index. */
     let i = 0;
 
-    /** On click for login button try to direct user to sign in, otherwise print error. */
     document.querySelectorAll("#login").forEach((el) => {
       el.addEventListener("click", () => {
         try {
@@ -223,7 +216,6 @@ const julian = [
       });
     });
 
-    /** Cycle through carousel messages every 5s, fading out the old message and fading in the next. */
     setInterval(() => {
       textEl.classList.remove("fade-in");
       textEl.classList.add("fade-out");
@@ -236,7 +228,6 @@ const julian = [
     }, 5000);
   </script>
 
-  <!-- --------------- STYLING ---------------------- -->
   <style>
     .banner {
       background-image: url("/img/baskin.jpg");
