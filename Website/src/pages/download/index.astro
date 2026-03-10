@@ -80,16 +80,35 @@ const role: string = user?.role || "guest";
   <h1>Download</h1>
   <ul>
     {
+      role === "researcher" ? (
+        <li>
+          <a href="https://berkeley.box.com/s/3wm9o7nxhthkmdij388802n7zfpsmlti">
+            <strong>Download Full Corpus</strong>
+          </a>
+        </li>
+      ) : null
+    }
+    </ul>
+      <ul>
+    {
+      role === "guest" ? (
+        <li>
+            <strong>For full access to the corpus, please create an account.</strong>
+        </li>
+      ) : null
+    }
+    </ul>
+    <h1>Interview Materials</h1>
+    <ul>
+    {
       files.map((file) => (
         <li>
           <a href={file.link}>{file.filename}</a>
         </li>
       ))
     }
-    {role === "researcher" && (
-    <li>
-    <a href="/bigfiles/wav_redacted.zip">Download 16 kHz WAV - Full Corpus</a>
-    </li>
-    )}
+    <!-- <li>
+    <a href="/download/wav_redacted.zip">Download dataset</a>
+    </li> -->
   </ul>
 </Layout>
