@@ -56,27 +56,27 @@ const julian = [
   <div class="grid-2">
     <div class="carousel-wrapper">
       <img
-        src="/img/amengual_training.jpg"
-        alt="picture of students being trained"
-        class="carousel-bg"
+      src="/img/amengual_training.jpg"
+      alt="picture of students being trained"
+      class="carousel-bg"
       />
-      <div class="carousel-text">
-        <p id="carousel-text">81 researchers</p>
-      </div>
-    </div>
-    <div>
-      <p class="justify">
-        <b>The MuHSiC (Multilingual Hispanic Speech in California)</b> project is
-        a corpus of bilingual Spanish-English speech from
-        sociolinguistic interviews and naturalistic conversations across California.
-        Speech data of diverse social and regional profiles were collected by undergraduate students trained by graduate
-        students and the 3 faculty PIs.<br>
-        
-        This corpus features 1200 35-minute recordings of
-        California Spanish-English bilinguals, 600 recorded in Spanish and 600 in English.
-      </p>
+    <div class="carousel-text">
+      <p id="carousel-text">81 researchers</p>
     </div>
   </div>
+  <div>
+    <p class="justify">
+      <b>The MuHSiC (Multilingual Hispanic Speech in California)</b> project is
+      a corpus of bilingual Spanish-English speech from
+      sociolinguistic interviews and naturalistic conversations across California.
+      Speech data of diverse social and regional profiles were collected by undergraduate students trained by graduate
+      students and the 3 faculty PIs.<br><br>
+      
+      This corpus features 1200 35-minute recordings of
+      California Spanish-English bilinguals, 600 recorded in Spanish and 600 in English.
+    </p>
+  </div>
+</div>
 
 {role !== "researcher" && (
   <div class="grid-2">
@@ -160,36 +160,36 @@ const julian = [
 
   <section class="grid-1" style="line-height:1.2rem;">
     <h2 style="text-align:center;">Project Manager</h2>
+      {julian.map((p) => (
+        <div style="text-align:center;">
+          <figure style="margin:0;">
+            <Image
+              src={p.profile}
+              alt={`${p.name} portrait`}
+              width={150}
+              height={200}
+              style="border-radius:16px;"
+            />
+          </figure>
 
-    {julian.map((p) => (
-      <div style="text-align:center;">
-        <figure style="margin:0;">
-          <Image
-            src={p.profile}
-            alt={`${p.name} portrait`}
-            width={200}
-            height={200}
-            style="border-radius:16px;"
-          />
-        </figure>
-
-        <div>
-          <p>
-            <a href={`https://orcid.org/${p.orcid}`} target="_blank" rel="noopener">
-              {p.name}
-            </a>
-          </p>
-          <p>{p.department}</p>
-          <p>{p.university}</p>
-          <p>
-            For all inquiries regarding corpus processing, downloading, web development, or dataset access,
-            please contact julianvargo@berkeley.edu
-          </p>
+          <div>
+            <p>
+              <a href={`https://orcid.org/${p.orcid}`} target="_blank" rel="noopener">
+                {p.name}
+              </a>
+            </p>
+            <p>{p.department}</p>
+            <p>{p.university}</p>
+          </div>
         </div>
-      </div>
-    ))}
-  </section>
+      ))}
+    </section>
 </div>
+</br>
+<p>
+For all inquiries regarding corpus processing, downloading, web development, or dataset access,
+please contact julianvargo@berkeley.edu
+</p>
 
   <script type="module">
 
