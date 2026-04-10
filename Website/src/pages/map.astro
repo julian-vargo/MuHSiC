@@ -4,9 +4,12 @@ export const prerender = false;
 
 // Fetch points from your own server API (keeps NocoDB token off the client)
 const res = await fetch(new URL("/api/locations.json", Astro.url));
+
 if (!res.ok) {
-  throw new Error(`Failed to load points: ${res.status}`);
+  const text = await res.text();
+  throw new Error(`Failed to load points: ${res.status} ${text}`);
 }
+
 const { points } = await res.json();
 
 // Turn points into the format the existing Leaflet script expects
@@ -14,13 +17,12 @@ const data = (points ?? [])
   .map((p) => ({
     lat: Number(p.latitude),
     lon: Number(p.longitude),
-    title: "",
+    code: p.code, // ADD THIS
   }))
   .filter((p) => Number.isFinite(p.lat) && Number.isFinite(p.lon));
 ---
 
 <Layout title="Map">
-  <!-- Leaflet assets (use your existing local copies) -->
   <link rel="stylesheet" href="/leaflet/leaflet.css" />
   <script is:inline src="/leaflet/leaflet.js"></script>
   <link rel="stylesheet" href="/leaflet/MarkerCluster.css" />
@@ -29,6 +31,12 @@ const data = (points ?? [])
 
   <div id="map" style="height: 540px;"></div>
   <pre id="data" style="display:none">{JSON.stringify(data)}</pre>
+
+  {data.length === 0 && (
+    <p style="margin-top: 0.75rem; color: #666;">
+      No valid latitude/longitude points were returned.
+    </p>
+  )}
 
   <script defer>
     var map = L.map("map").setView([37.4, -119.5], 6);
@@ -43,14 +51,19 @@ const data = (points ?? [])
     var markers = L.markerClusterGroup();
 
     const data = JSON.parse(document.querySelector("#data").innerText);
+
     data.forEach((p) => {
       var marker = L.marker(new L.LatLng(p.lat, p.lon));
+
+      if (p.code) {
+        marker.bindTooltip(p.code, { direction: "top" });
+      }
+
       markers.addLayer(marker);
     });
 
     map.addLayer(markers);
 
-    // Optional: auto-fit bounds if you have at least one point
     if (data.length > 0) {
       var bounds = markers.getBounds();
       if (bounds && bounds.isValid && bounds.isValid()) {

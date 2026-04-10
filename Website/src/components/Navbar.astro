@@ -14,6 +14,28 @@ import { Image } from "astro:assets";
     z-index: 1000;
     background: #003c6c;
   }
+  nav {
+  width: 100%;
+  }
+
+  nav ul {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: nowrap;        /* prevent wrapping */
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  nav ul li {
+    white-space: nowrap;      /* keep items on one line */
+  }
+
+  nav ul li a {
+    font-size: 1rem;       /* shrink text */
+    padding: 0.5rem 0.6rem;   /* tighter spacing */
+  }
 </style>
 
 <nav>
@@ -45,6 +67,8 @@ import { Image } from "astro:assets";
     <li><a href="/download">Download</a></li>
     <!-- <li><a href="/map">Map</a></li> -->
     <li><a href="/corpus">Database</a></li>
+    <li><a href="/sample">Sample</a></li>
+    <li><a href="/sample">Map</a></li>
     <li><a href="/about/overview">Overview</a></li>
     <li><a href="/about/project-team">Team</a></li>
     <li><a href="/cite-the-corpus">Cite</a></li>
@@ -77,6 +101,8 @@ import { Image } from "astro:assets";
     <li><a href="/download">Download</a></li>
     <!-- <li><a href="/map">Map</a></li> -->
     <li><a href="/corpus">Database</a></li>
+    <li><a href="/sample">Sample</a></li>
+    <li><a href="/sample">Map</a></li>
     <li><a href="/about/overview">Overview</a></li>
     <li><a href="/about/project-team">Team</a></li>
     <li><a href="/cite-the-corpus">Cite</a></li>
