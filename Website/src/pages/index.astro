@@ -2,6 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import { Image } from "astro:assets";
 import { getSession } from "auth-astro/server";
+import SafeEmail from "@/components/SafeEmail.astro";
 
 const session = await getSession(Astro.request);
 const role = (session?.user as any)?.role ?? "guest";
@@ -29,7 +30,7 @@ const people = [
     profile: "/img/justin_profile.jpg",
     department: "Department of Spanish and Portuguese",
     university: "University of California, Berkeley",
-    orcid: "0000-0002-5708-6461",
+    orcid: "0000-0002-9426-2620",
     website:
       "https://spanish-portuguese.berkeley.edu/people/faculty/justin-davidson",
     email: "justindavidson@berkeley.edu",
@@ -152,6 +153,8 @@ const julian = [
             </p>
             <p>{person.department}</p>
             <p>{person.university}</p>
+            <p><SafeEmail email={person.email} /></p>
+            <a href={person.website} target="_blank" rel="noopener">Website</a>
           </div>
         </div>
       ))}
@@ -180,6 +183,8 @@ const julian = [
             </p>
             <p>{p.department}</p>
             <p>{p.university}</p>
+            <p><SafeEmail email={p.email} /></p>
+            <a href={p.website} target="_blank" rel="noopener">Website</a>
           </div>
         </div>
       ))}
@@ -188,7 +193,7 @@ const julian = [
 </br>
 <p>
 For all inquiries regarding corpus processing, downloading, web development, or dataset access,
-please contact julianvargo@berkeley.edu
+please contact <SafeEmail email="julianvargo@berkeley.edu" />
 </p>
 
   <script type="module">

@@ -1,5 +1,7 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import SafeEmail from "@/components/SafeEmail.astro";
+
 ---
 
 <Layout title="Project Team">
@@ -10,21 +12,21 @@ import Layout from "@/layouts/Layout.astro";
       <strong>Dr. Mark Amengual</strong><br />
       Department of Languages and Applied Linguistics<br />
       University of California, Santa Cruz<br />
-      amengual@ucsc.edu
+      <SafeEmail email={"amengual@ucsc.edu"} />
     </p>
 
     <p>
       <strong>Dr. Ji Young Kim</strong><br />
       Department of Spanish and Portuguese<br />
       University of California, Los Angeles<br />
-      jiyoungkim@ucla.edu
+      <SafeEmail email={"jiyoungkim@ucla.edu"} />
     </p>
 
     <p>
       <strong>Dr. Justin Davidson</strong><br />
       Department of Spanish and Portuguese<br />
       University of California, Berkeley<br />
-      justindavidson@berkeley.edu
+      <SafeEmail email={"justindavidson@berkeley.edu"} />
     </p>
   </div>
   <div>
@@ -33,7 +35,7 @@ import Layout from "@/layouts/Layout.astro";
       <strong>Julian Vargo</strong><br />
       Department of Spanish and Portuguese<br />
       University of California, Berkeley<br />
-      julianvargo@berkeley.edu<br /><br />
+      <SafeEmail email={"julianvargo@berkeley.edu"} />
     </p>
   </div>
 </div>

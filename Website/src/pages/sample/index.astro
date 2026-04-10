@@ -1,0 +1,704 @@
+---
+export const prerender = false;
+
+import Layout from "@/layouts/Layout.astro";
+import { getAllRows, getColumnsFromMeta } from "../../lib/nocodb_table";
+
+type Row = Record<string, any>;
+
+const HIDE_COLS = new Set<string>([
+  "id",
+  "created_at",
+  "updated_at",
+  "nc_created_by",
+  "nc_updated_by",
+  "nc_order",
+  "created_by",
+  "updated_by",
+]);
+
+let error: string | null = null;
+let tableId = "";
+let tableName = "";
+let nocodbBaseUrl = "";
+let rows: Row[] = [];
+
+try {
+  tableId = String(import.meta.env.SAMPLE_TABLEID || "").trim();
+  const rawEnvBase = String(import.meta.env.NOCODB_BASE_URL || "").trim();
+  nocodbBaseUrl = (rawEnvBase || "https://muhsic.ucsc.edu").replace(/\/+$/, "");
+
+  nocodbBaseUrl = nocodbBaseUrl.replace(/\/+$/, "");
+
+  if (!tableId) {
+    throw new Error("Missing SAMPLE_TABLEID in your env file.");
+  }
+
+  if (!nocodbBaseUrl) {
+    throw new Error("Missing NOCODB_BASE_URL in your env file.");
+  }
+
+  const colRes = await getColumnsFromMeta(tableId);
+  tableName = String(colRes.meta?.table_name ?? colRes.meta?.title ?? tableId);
+
+  rows = await getAllRows(tableId, 500);
+
+  rows = rows.map((row) => {
+    const cleaned: Row = {};
+    for (const [k, v] of Object.entries(row || {})) {
+      if (!HIDE_COLS.has(k)) cleaned[k] = v;
+    }
+    return cleaned;
+  });
+} catch (e: any) {
+  error = e?.message ?? String(e);
+}
+
+const payload = JSON.stringify({
+  tableId,
+  tableName,
+  nocodbBaseUrl,
+  rows,
+}).replaceAll("</script>", "<\\/script>");
+---
+
+<Layout title="Sample data">
+  {error ? (
+    <p style="color:#b00020; font-weight:600;">Error: {error}</p>
+  ) : (
+    <>
+      <style>
+        .page-wrap {
+          display: grid;
+          gap: 1rem;
+        }
+
+        .top-meta {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 1rem;
+          align-items: end;
+          justify-content: space-between;
+        }
+
+        .search-input {
+          width: 100%;
+          max-width: 420px;
+          padding: 0.6rem 0.75rem;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          font: inherit;
+        }
+
+        .participant-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          gap: 0.75rem;
+        }
+
+        .participant-card {
+          display: block;
+          width: 100%;
+          text-align: left;
+          padding: 0.9rem 1rem;
+          border: 1px solid #d9d9d9;
+          border-radius: 10px;
+          background: white;
+          cursor: pointer;
+          font: inherit;
+        }
+
+        .participant-card:hover {
+          background: #f7f7f7;
+        }
+
+        .participant-code {
+          font-weight: 700;
+          margin-bottom: 0.35rem;
+          word-break: break-word;
+        }
+
+        .participant-meta {
+          color: #555;
+          font-size: 0.92rem;
+        }
+
+        .empty-state {
+          padding: 1rem;
+          border: 1px solid #e6e6e6;
+          border-radius: 10px;
+          background: #fafafa;
+        }
+
+        #detailModal {
+          position: fixed;
+          inset: 0;
+          display: none;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0, 0, 0, 0.58);
+          z-index: 2147483647;
+          padding: 1rem;
+        }
+
+        #detailModal[data-open="true"] {
+          display: flex;
+        }
+
+        .modal-panel {
+          width: min(980px, 100%);
+          max-height: min(90vh, 900px);
+          overflow: auto;
+          background: white;
+          color: black;
+          border-radius: 14px;
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+        }
+
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 1rem;
+          padding: 1rem 1.1rem;
+          border-bottom: 1px solid #e5e5e5;
+          position: sticky;
+          top: 0;
+          background: white;
+          z-index: 5;
+        }
+
+        .modal-title {
+          font-size: 1.1rem;
+          font-weight: 700;
+          word-break: break-word;
+        }
+
+        .close-btn {
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          background: white;
+          padding: 0.45rem 0.7rem;
+          cursor: pointer;
+          font: inherit;
+        }
+
+        .modal-body {
+          display: grid;
+          gap: 1.25rem;
+          padding: 1.1rem;
+        }
+
+        .section-title {
+          font-size: 1rem;
+          font-weight: 700;
+          margin: 0 0 0.6rem 0;
+        }
+
+        .summary-table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        .summary-table th,
+        .summary-table td {
+          border: 1px solid #ddd;
+          padding: 0.65rem 0.75rem;
+          text-align: left;
+          vertical-align: top;
+        }
+
+        .summary-table th {
+          width: 280px;
+          background: #fafafa;
+        }
+
+        .file-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 0.8rem;
+          align-items: stretch;
+        }
+
+        @media (max-width: 760px) {
+          .file-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        .file-card {
+          border: 1px solid #ddd;
+          border-radius: 10px;
+          padding: 0.75rem;
+          background: #fcfcfc;
+          display: flex;
+          flex-direction: column;
+          gap: 0.65rem;
+          min-height: 150px;
+        }
+
+        .file-label {
+          font-weight: 700;
+          word-break: break-word;
+          line-height: 1.2;
+        }
+
+        .file-entry {
+          display: flex;
+          flex-direction: column;
+          gap: 0.55rem;
+          height: 100%;
+        }
+
+        .file-entry + .file-entry {
+          border-top: 1px solid #e5e5e5;
+          padding-top: 0.7rem;
+        }
+
+        .file-title {
+          font-size: 0.9rem;
+          color: #444;
+          word-break: break-word;
+          line-height: 1.25;
+        }
+
+        .file-actions {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        }
+
+        .file-link {
+          display: inline-block;
+          padding: 0.42rem 0.65rem;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          text-decoration: none;
+          color: inherit;
+          background: white;
+          font-size: 0.92rem;
+          line-height: 1.2;
+        }
+
+        .embed-wrap {
+          border: 1px solid #e3e3e3;
+          border-radius: 8px;
+          overflow: hidden;
+          background: white;
+          padding: 0.55rem 0.65rem;
+          margin-top: auto;
+        }
+
+        .audio-player {
+          width: 100%;
+          height: 32px;
+        }
+
+        .missing-file {
+          color: #777;
+          font-style: italic;
+        }
+
+        .raw-json {
+          white-space: pre-wrap;
+          word-break: break-word;
+          background: #fafafa;
+          border: 1px solid #e8e8e8;
+          border-radius: 8px;
+          padding: 0.8rem;
+          font-size: 0.9rem;
+        }
+
+        .meta-line {
+          color: #555;
+        }
+      </style>
+
+      <div class="page-wrap">
+        <div class="top-meta">
+          <div>
+            <div class="meta-line">Table: <code>{tableName}</code></div>
+          </div>
+
+          <label style="display:flex; flex-direction:column; gap:0.35rem;">
+            <span style="font-weight:600;">Search participants</span>
+            <input
+              id="searchInput"
+              class="search-input"
+              type="text"
+              placeholder="Search by code, birth country, birth city, or US arrival age..."
+            />
+          </label>
+        </div>
+
+        <div id="resultCount" class="meta-line"></div>
+
+        <div id="participantGrid" class="participant-grid"></div>
+
+        <div
+          id="detailModal"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Interviewee details"
+          data-open="false"
+        >
+          <div class="modal-panel">
+            <div class="modal-header">
+              <div class="modal-title" id="modalTitle">Interviewee</div>
+              <button id="closeModalBtn" class="close-btn" type="button">Close</button>
+            </div>
+
+            <div class="modal-body">
+              <section>
+                <h2 class="section-title">Summary</h2>
+                <table class="summary-table">
+                  <tbody id="summaryBody"></tbody>
+                </table>
+              </section>
+
+              <section>
+                <h2 class="section-title">Files</h2>
+                <div id="fileGrid" class="file-grid"></div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script type="application/json" id="nocodbPayload" set:html={payload}></script>
+
+      <script>
+        (function () {
+          const payloadEl = document.getElementById("nocodbPayload");
+          if (!payloadEl) return;
+
+          let parsed = {};
+          try {
+            parsed = JSON.parse(payloadEl.textContent || "{}");
+          } catch (e) {
+            console.error("Could not parse payload", e);
+            return;
+          }
+
+          const rows = Array.isArray(parsed.rows) ? parsed.rows : [];
+          const nocodbBaseUrl = String(parsed.nocodbBaseUrl || "").trim().replace(/\/+$/, "");
+
+          const searchInput = document.getElementById("searchInput");
+          const participantGrid = document.getElementById("participantGrid");
+          const resultCount = document.getElementById("resultCount");
+
+          const detailModal = document.getElementById("detailModal");
+          const closeModalBtn = document.getElementById("closeModalBtn");
+          const modalTitle = document.getElementById("modalTitle");
+          const summaryBody = document.getElementById("summaryBody");
+          const fileGrid = document.getElementById("fileGrid");
+
+          if (
+            !searchInput ||
+            !participantGrid ||
+            !resultCount ||
+            !detailModal ||
+            !closeModalBtn ||
+            !modalTitle ||
+            !summaryBody ||
+            !fileGrid
+          ) return;
+
+          function escapeHtml(s) {
+            return String(s)
+              .replaceAll("&", "&amp;")
+              .replaceAll("<", "&lt;")
+              .replaceAll(">", "&gt;")
+              .replaceAll('"', "&quot;")
+              .replaceAll("'", "&#039;");
+          }
+
+          function normalize(v) {
+            if (v === null || v === undefined) return "";
+            if (typeof v === "object") return JSON.stringify(v);
+            return String(v);
+          }
+
+          function getParticipantCode(row) {
+            return normalize(row?.interviewee_participant_code).trim();
+          }
+
+          function buildCard(row) {
+            const code = getParticipantCode(row) || "(missing participant code)";
+            const country = normalize(row?.interviewee_birth_country) || "(empty)";
+            const city = normalize(row?.interviewee_birth_city) || "(empty)";
+            const age = normalize(row?.interviewee_us_arrival_age) || "(empty)";
+
+            return (
+              '<button class="participant-card" type="button" data-code="' + escapeHtml(code) + '">' +
+                '<div class="participant-code">' + escapeHtml(code) + '</div>' +
+                '<div class="participant-meta">Birth country: ' + escapeHtml(country) + '</div>' +
+                '<div class="participant-meta">Birth city: ' + escapeHtml(city) + '</div>' +
+                '<div class="participant-meta">US arrival age: ' + escapeHtml(age) + '</div>' +
+              '</button>'
+            );
+          }
+
+          function isAbsoluteUrl(s) {
+            return /^https?:\/\//i.test(String(s || "").trim());
+          }
+
+          function joinUrl(base, path) {
+            const b = String(base || "").replace(/\/+$/, "");
+            const p = String(path || "").replace(/^\/+/, "");
+            if (!b || !p) return "";
+            return b + "/" + p;
+          }
+
+          function toAbsoluteUrl(pathValue) {
+            const value = String(pathValue || "").trim();
+            if (!value) return "";
+            if (isAbsoluteUrl(value)) return value;
+            if (!nocodbBaseUrl) return "";
+            return joinUrl(nocodbBaseUrl, value);
+          }
+
+          function extractAttachments(value) {
+            if (!value) return [];
+
+            if (Array.isArray(value)) {
+              return value.filter(Boolean);
+            }
+
+            if (typeof value === "string") {
+              const trimmed = value.trim();
+              if (!trimmed) return [];
+
+              if (
+                isAbsoluteUrl(trimmed) ||
+                trimmed.startsWith("/") ||
+                trimmed.startsWith("download/") ||
+                trimmed.startsWith("dltemp/")
+              ) {
+                return [{ url: trimmed, title: trimmed }];
+              }
+
+              try {
+                const parsedValue = JSON.parse(trimmed);
+                if (Array.isArray(parsedValue)) return parsedValue.filter(Boolean);
+                if (parsedValue && typeof parsedValue === "object") return [parsedValue];
+              } catch (e) {
+                return [{ raw: trimmed, title: trimmed }];
+              }
+
+              return [];
+            }
+
+            if (typeof value === "object") {
+              return [value];
+            }
+
+            return [];
+          }
+
+          function getAttachmentPath(att) {
+            if (!att) return "";
+
+            if (typeof att === "string") {
+              return String(att).trim();
+            }
+
+            if (typeof att !== "object") return "";
+
+            return String(
+              att.signedPath ||
+              att.path ||
+              att.url ||
+              att.signedUrl ||
+              att.publicUrl ||
+              ""
+            ).trim();
+          }
+
+          function getAttachmentUrl(att) {
+            const rawPath = getAttachmentPath(att);
+            return toAbsoluteUrl(rawPath);
+          }
+
+          function getAttachmentTitle(att, fallbackLabel, index) {
+            if (!att || typeof att !== "object") {
+              return fallbackLabel + " " + String(index + 1);
+            }
+
+            return (
+              att.title ||
+              att.name ||
+              att.filename ||
+              fallbackLabel + " " + String(index + 1)
+            );
+          }
+
+          function renderFileCard(label, value) {
+            const attachments = extractAttachments(value);
+
+            if (!attachments.length) {
+              return (
+                '<div class="file-card">' +
+                  '<div class="file-label">' + escapeHtml(label) + '</div>' +
+                  '<div class="missing-file">(missing)</div>' +
+                '</div>'
+              );
+            }
+
+            const lowerLabel = label.toLowerCase();
+            const isPdf = lowerLabel.includes("pdf");
+            const isAudio = lowerLabel.includes("mp3") || lowerLabel.includes("audio");
+
+            const itemsHtml = attachments.map((att, i) => {
+              const url = getAttachmentUrl(att);
+              const title = getAttachmentTitle(att, label, i);
+
+              if (!url) {
+                return (
+                  '<div class="file-entry">' +
+                    '<div class="file-title">' + escapeHtml(title) + '</div>' +
+                    '<div class="missing-file">Could not resolve file URL.</div>' +
+                    '<div class="raw-json">' + escapeHtml(JSON.stringify(att, null, 2)) + '</div>' +
+                  '</div>'
+                );
+              }
+
+              let bodyHtml = "";
+
+              if (isPdf) {
+                bodyHtml =
+                  '<div class="file-actions">' +
+                    '<a class="file-link" href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">' +
+                      'Open PDF' +
+                    '</a>' +
+                  '</div>';
+              } else if (isAudio) {
+                bodyHtml =
+                  '<div class="file-actions">' +
+                    '<a class="file-link" href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">' +
+                      'Open audio' +
+                    '</a>' +
+                  '</div>' +
+                  '<div class="embed-wrap">' +
+                    '<audio class="audio-player" controls preload="metadata">' +
+                      '<source src="' + escapeHtml(url) + '">' +
+                      'Your browser does not support audio playback.' +
+                    '</audio>' +
+                  '</div>';
+              } else {
+                bodyHtml =
+                  '<div class="file-actions">' +
+                    '<a class="file-link" href="' + escapeHtml(url) + '" target="_blank" rel="noopener noreferrer">' +
+                      'Open file' +
+                    '</a>' +
+                  '</div>';
+              }
+
+              return (
+                '<div class="file-entry">' +
+                  '<div class="file-title">' + escapeHtml(title) + '</div>' +
+                  bodyHtml +
+                '</div>'
+              );
+            }).join("");
+
+            return (
+              '<div class="file-card">' +
+                '<div class="file-label">' + escapeHtml(label) + '</div>' +
+                itemsHtml +
+              '</div>'
+            );
+          }
+
+          function renderList() {
+            const q = normalize(searchInput.value).trim().toLowerCase();
+
+            const filtered = rows.filter((row) => {
+              if (!q) return true;
+
+              const searchable = [
+                normalize(row?.interviewee_participant_code),
+                normalize(row?.interviewee_birth_country),
+                normalize(row?.interviewee_birth_city),
+                normalize(row?.interviewee_us_arrival_age),
+              ]
+                .join(" ")
+                .toLowerCase();
+
+              return searchable.includes(q);
+            });
+
+            resultCount.textContent = filtered.length + " participant(s)";
+            participantGrid.innerHTML = filtered.length
+              ? filtered.map(buildCard).join("")
+              : '<div class="empty-state">No matching participants.</div>';
+          }
+
+          function openModalForRow(row) {
+            const code = getParticipantCode(row) || "(missing participant code)";
+            modalTitle.textContent = code;
+
+            const summaryRows = [
+              ["interviewee_birth_country", normalize(row?.interviewee_birth_country) || "(empty)"],
+              ["interviewee_birth_city", normalize(row?.interviewee_birth_city) || "(empty)"],
+              ["interviewee_us_arrival_age", normalize(row?.interviewee_us_arrival_age) || "(empty)"],
+            ];
+
+            summaryBody.innerHTML = summaryRows
+              .map(([k, v]) => {
+                return (
+                  "<tr>" +
+                    "<th>" + escapeHtml(k) + "</th>" +
+                    "<td>" + escapeHtml(v) + "</td>" +
+                  "</tr>"
+                );
+              })
+              .join("");
+
+            fileGrid.innerHTML = [
+              renderFileCard("pdf_english", row?.pdf_english),
+              renderFileCard("pdf_spanish", row?.pdf_spanish),
+              renderFileCard("mp3_english", row?.mp3_english),
+              renderFileCard("mp3_spanish", row?.mp3_spanish),
+            ].join("");
+
+            detailModal.dataset.open = "true";
+          }
+
+          function closeModal() {
+            detailModal.dataset.open = "false";
+          }
+
+          searchInput.addEventListener("input", renderList);
+
+          participantGrid.addEventListener("click", function (e) {
+            const el = e.target.closest(".participant-card");
+            if (!el) return;
+
+            const code = el.getAttribute("data-code");
+            if (!code) return;
+
+            const row = rows.find((r) => getParticipantCode(r) === code);
+            if (!row) return;
+
+            openModalForRow(row);
+          });
+
+          closeModalBtn.addEventListener("click", closeModal);
+
+          detailModal.addEventListener("click", function (e) {
+            if (e.target === detailModal) closeModal();
+          });
+
+          document.addEventListener("keydown", function (e) {
+            if (e.key === "Escape" && detailModal.dataset.open === "true") {
+              closeModal();
+            }
+          });
+
+          renderList();
+        })();
+      </script>
+    </>
+  )}
+</Layout>
